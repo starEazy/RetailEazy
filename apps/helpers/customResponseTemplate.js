@@ -75,8 +75,19 @@ const errorResponse = (req, res, msg, result) => {
   });
 };
 
+const notFoundResponse = (req, res, msg) => {
+  return new CustomMessage(res).error(StatusCodes.NOT_FOUND, {
+    status_type: ReasonPhrases.NOT_FOUND,
+    code: StatusCodes.NOT_FOUND,
+    method: req.method,
+    status: false,
+    msg: msg,
+  });
+};
+
 module.exports = {
   commonApiResponse,
   successResponse,
   errorResponse,
+  notFoundResponse,
 };

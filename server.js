@@ -12,6 +12,8 @@ const debug = require("debug");
 const numCPUs = os.cpus().length;
 const commonRoutes = require("./Routes/commonRoutes");
 const AuthRoutes = require("./Routes/AuthRoutes");
+const masterRoutes = require("./Routes/masterRoutes");
+const { notFoundResponse } = require("./apps/helpers/customResponseTemplate");
 // const db = require("./database/models/index");
 // db.sequelize.sync();
 
@@ -57,8 +59,13 @@ if (cluster.isMaster) {
     res.send("API working");
   });
 
+  // app.use((req, res) => {
+  //   return notFoundResponse(req, res, "URL Not found");
+  // });
+
   app.use("/api", commonRoutes);
   app.use("/api/Authenticate", AuthRoutes);
+  app.use("/api/Master", masterRoutes);
 
   app.use(
     cors({

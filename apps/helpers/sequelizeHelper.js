@@ -26,6 +26,8 @@ const postgreConnection = {
           return result;
       }
     } else {
+
+      console.log('idhar aaya kya');
       let result = await db.sequelize.query(query, {
         type: sequelize.QueryTypes.SELECT,
       });
