@@ -235,7 +235,7 @@ class AuthService {
   }
 
   static async APP_UserLogOut(JsonObject) {
-    writeLog("UserLogOut Json", JsonObject);
+    writeLog(("UserLogOut Json", JsonObject));
     let squery = "";
     let response;
     const requeststr = JSON.stringify(JsonObject);
@@ -249,7 +249,7 @@ class AuthService {
       "INNER JOIN tbl_registration tr ON tu.userid = tr.registrationid " +
       "WHERE tu.dmsledgercode = $2 AND tr.mobileno = $3";
 
-    writeLog("APP_UserLogOut Save Query", squery);
+    writeLog(("APP_UserLogOut Save Query", squery));
 
     const Reguserid = await postgreConnection.selectWithValues(squery, [
       mstdetails.BrandCode,
@@ -258,7 +258,6 @@ class AuthService {
     ]);
 
     const user_id = Reguserid[0].userid;
-
 
     if (user_id > 0) {
       squery =
