@@ -64,6 +64,26 @@ const successResponse = (req, res, msg, result) => {
     result: result,
   });
 };
+const forbiddenResponse = (req, res, msg, result) => {
+  return new CustomMessage(res).error(StatusCodes.FORBIDDEN, {
+    status_type: ReasonPhrases.FORBIDDEN,
+    code: StatusCodes.FORBIDDEN,
+    method: req.method,
+    status: false,
+    msg: msg,
+    result: result,
+  });
+};
+const unauthorizedResponse = (req, res, msg, result) => {
+  return new CustomMessage(res).error(StatusCodes.UNAUTHORIZED, {
+    status_type: ReasonPhrases.UNAUTHORIZED,
+    code: StatusCodes.UNAUTHORIZED,
+    method: req.method,
+    status: false,
+    msg: msg,
+    result: result,
+  });
+};
 const errorResponse = (req, res, msg, result) => {
   return new CustomMessage(res).error(StatusCodes.BAD_REQUEST, {
     status_type: ReasonPhrases.BAD_REQUEST,
@@ -90,4 +110,6 @@ module.exports = {
   successResponse,
   errorResponse,
   notFoundResponse,
+  unauthorizedResponse,
+  forbiddenResponse,
 };

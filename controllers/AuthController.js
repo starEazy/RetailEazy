@@ -73,9 +73,8 @@ class AuthController extends AuthService {
         // Write logs
         let result = await super.customerAuth(userCredential);
 
-        console.log(">>>>>>>>>>>>>>>>", result);
         if (result != null || result != undefined) {
-          res.setHeader("Token", "star");
+          res.setHeader("Token", result.login_token);
           return successResponse(
             req,
             res,
@@ -88,6 +87,37 @@ class AuthController extends AuthService {
       }
     } catch (e) {
       return commonApiResponse(req, res, false, e.toString());
+    }
+  }
+
+  static async APP_UserLogOut(req, res) {
+    try {
+      const objval = req.body;
+
+      console.log(objval);
+      const { error } = joiSchema.logoutSchema.validate(req.body, joiOptions);
+      if (error) {
+        return errorResponse(
+          req,
+          res,
+          "fields missing or invalid",
+          error.message
+        );
+      } else {
+        let result = await super.APP_UserLogOut(objval);
+
+        if (result != null || result != undefined) {
+          return successResponse(req, res, "success", result);
+        } else {
+          return errorResponse(
+            req,
+            res,
+            "UnExcepted has occured.We are working on it."
+          );
+        }
+      }
+    } catch (e) {
+      return errorResponse(req, res, e.toString());
     }
   }
 }

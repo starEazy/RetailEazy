@@ -30,6 +30,12 @@ const schemas = {
     pageindexno: Joi.number().required(),
     processtype: Joi.string().required(),
   }),
+  logoutSchema: Joi.object().keys({
+    LedgerCode: Joi.string().required(),
+    MobileNo: Joi.string().required(),
+    BrandCode: Joi.string().required(),
+    Remarks: Joi.string().required(),
+  }),
 };
 
 module.exports = schemas;

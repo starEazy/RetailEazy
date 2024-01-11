@@ -15,7 +15,6 @@ class MasterController extends MasterService {
     super();
   }
 
-  GetBrand;
 
   static async GetBrand(req, res) {
     try {
