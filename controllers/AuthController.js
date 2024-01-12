@@ -117,7 +117,13 @@ class AuthController extends AuthService {
         }
       }
     } catch (e) {
-      return errorResponse(req, res, e.toString());
+      console.log(e);
+      return errorResponse(
+        req,
+        res,
+        "UnExcepted has occured.We are working on it.",
+        e
+      );
     }
   }
 }
