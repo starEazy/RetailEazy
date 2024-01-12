@@ -1,0 +1,67 @@
+ LOGIN_URL: '/api/Authenticate/CustomerAuth', >> Done 
+  URL_CustomerAuthOTP: '/api/Authenticate/CustomerAuthOTP', >> Done
+  URL_BrandMaster: '/api/Master/GetBrand', >> Done 
+  URL_DistributorMaster: '/api/Master/Distributor', >> Done 
+  URL_GetDealer: '/api/Master/GetDealer', >> Garvish
+  URL_ItemMaster: '/api/Master/Item', >> Garvish
+  URL_ItemGroupMaster: '/api/Master/ITEMGROUPMASTER', >> Garvish
+  URL_UnitMaster: '/api/Master/Unit', >> Garvish
+  URL_Division: '/api/Master/Division', >> Garvish
+  URL_UserDivisionMapping: '/api/Master/UserDivisionMapping', >> Subham
+  URL_CityMaster: '/api/Master/GetCity', >> Subham
+  URL_StateMaster: '/api/Master/GetState', >> Subham
+  URL_CountryMaster: "/api/Master/GetCountry",  >> Subham
+  URL_GetPlacedOrder: '/api/Order/GetPlacedOrder',
+  URL_GetReceivedOrder: '/api/Order/GetReceivedOrder',
+  URL_GetBillingDetail: '/api/Order/GetBillingDetail',
+  URL_GetDesignation: '/api/Master/GetDesignation', >> Subham
+  URL_DistributorDivisionTagging: '/api/Master/DistributorDivisionTagging',
+  URL_PrimaryCategory: '/api/Master/PrimaryCategory',
+  URL_SecondaryCategory: '/api/Master/SecondaryCategory',
+  URL_PurchaseInvoice: '/api/purchaseinvoice/GetDetail',
+  URL_SaleMaster: '/api/Master/DSDLRCONTACTDETAIL',
+  URL_SavePurchaseInvoice: "/api/purchaseinvoice/save",
+  URL_NotificationData: "/api/Master/NotificationData",
+  URL_GetHsnMaster: "/api/Master/GetHsnMaster",
+  URL_SubmitOrder: '/api/Order/POST',
+  URL_ClientAuth: "/api/Authenticate/AppAuth",
+  URL_UpdateProfile: "/api/Authenticate/UpdateProfile",
+  URL_Login: "/api/Authenticate/CustomerAuth",
+  URL_PostOrderList: "/api/Order/POST",
+  URL_UPIPayment: "/api/Payment/UPIPayment",
+  URL_GenerateOTP: "/api/Email/OTP",
+  URL_ForgotPassword: "/api/Email/ForgetPassword",
+  URL_DashboardChart: "/api/Dashboards/Chart",
+  URL_ChangePassword: "/api/Authenticate/ChangePassword",
+  URL_UpdateItemStock: "/api/Order/ItemStock",
+  URL_UpdateKYC: "/api/Authenticate/UpdateKYC",
+  URL_CreateBilling: "/api/Order/SaveBilling",
+  URL_SaveCustomerMaster: "/api/Master/SaveCustomerMaster",
+  URL_ImageUpload: "/api/Upload/Image",
+  URL_PlaceOrderCancel: "/api/Order/PlaceOrderCancel",
+  URL_ReceivedOrderCancel: "/api/Order/ReceivedOrderCancel",
+  URL_PurchaseInvoiceDetails: "/api/purchaseinvoice/GetDetail",
+  URL_SalesPersonDetails: "/api/Master/DSDLRCONTACTDETAIL",
+  URL_ManualErrorLog: "/api/manualerrorlogsync/save",
+  URL_AutomaticErrorLog: "/api/automaticerrorlogsync/save",
+  URL_AdvertisementData: "/api/Master/AdvertisementData",
+  URL_GlobalSetting: "/api/Authenticate/GlobalSetting",
+  URL_UserApiLogDetail: "/api/UserApiLogDetail",
+  URL_DmsSyncStatus: "/api/Master/DmsSyncStatus",
+  URL_LoginType: "/api/Master/LoginType",
+  URL_DMSGetPurchaseInvoice: "/api/Master/DMSGetPurchaseInvoice",
+  URL_DMSGetOrder: "/api/Master/DMSGetOrder",
+  URL_GetRedemptionType: "/api/Loyalty_Master/Getredemptiontype",
+  URL_GetVendor: "/api/Loyalty_Master/GetVender",
+  URL_GetCatalogue: "/api/Loyalty_Master/GetCatalogue",
+  URL_GetBrandCatalogue: "/api/Loyalty_Master/GetBrandCatalogue",
+  URL_GetBrandCatalogueMaster: "/api/Loyalty_Master/GetBrandCatalogue_master",
+  URL_GetDelivery: "/api/Loyalty_Master/GetDelivery",
+  URL_GetTransactionDetail: "/api/Loyalty_transaction/GetTransactionDetail",
+  URL_Loyalty_delivery: "/api/Loyalty_delivery/POST",
+  URL_Loyalty_transaction: "/api/Loyalty_transaction/POST",
+  URL_UserLogout: '/api/UserLogOut',
+  URL_GET_DISTRIBUTOR_DMS_ORDER: '/api/Master/DMSGetDistributorOrder',
+ URL_BulkFileUploadToAzureF: "https://image.eazydms.in/api/BulkFileUploadToAzure",
+ URL_AzuzeLogin:"https://image.eazydms.in/api/Login",
+

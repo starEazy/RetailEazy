@@ -3,6 +3,8 @@
 const { writeLog } = require("../apps/helpers/utils");
 const postgreConnection = require("../apps/helpers/sequelizeHelper");
 const { buildToken } = require("../apps/JWT/encrypt-decrypt");
+const { Jwt } = require("../apps/JWT/jwt");
+const { response } = require("express");
 
 class AuthService {
   static async customerAuth(userCredential) {
@@ -201,20 +203,22 @@ class AuthService {
           response.PoOrderNo = "0";
 
           // Get token and update headers
-          const token = buildToken(response.UserId);
 
-          console.log("token>>>>>>>>>>>", token);
-          // const token = buildToken(response.UserId, response.Username);
+          const login_token = new Jwt().createToken(
+            { user_id: response.UserId },
+            { expiresIn: "365d" }
+          );
+          // const token = buildToken(response.UserId);
+
+          response.login_token = login_token;
+
           writeLog("Token Generate Done  ");
-          //   postgreConnection.insertNewToken(
-          //     userCredential,
-          //     response.UserId,
-          //     token
-          //   );
+          postgreConnection.insertNewToken(
+            userCredential,
+            response.UserId,
+            login_token
+          );
 
-          //   /////////////////////////
-          //   request.headers["Token"] = token;
-          // ////////////////////////////
           writeLog(new Date().toString());
         } else {
           response = null;
@@ -228,6 +232,45 @@ class AuthService {
       console.log(error);
       return error;
     }
+  }
+
+  static async APP_UserLogOut(JsonObject) {
+    writeLog(("UserLogOut Json", JsonObject));
+    let squery = "";
+    let response;
+    const requeststr = JSON.stringify(JsonObject);
+    if (!requeststr) return null;
+
+    const mstdetails = JSON.parse(requeststr);
+
+    squery =
+      "SELECT DISTINCT tu.userid FROM tbl_userdesignationmapping tu " +
+      "INNER JOIN tbl_brandmaster tb ON tu.brandid = tb.brandid AND tb.brandcode = $1 " +
+      "INNER JOIN tbl_registration tr ON tu.userid = tr.registrationid " +
+      "WHERE tu.dmsledgercode = $2 AND tr.mobileno = $3";
+
+    writeLog(("APP_UserLogOut Save Query", squery));
+
+    const Reguserid = await postgreConnection.selectWithValues(squery, [
+      mstdetails.BrandCode,
+      mstdetails.LedgerCode,
+      mstdetails.MobileNo,
+    ]);
+
+    const user_id = Reguserid[0].userid;
+
+    if (user_id > 0) {
+      squery =
+        "UPDATE tbl_mobilesessiondetail SET remarks = $1, " +
+        "LogoutTIme = now(), isactivesession = false WHERE UserID = $2 AND isactivesession = true";
+
+      await postgreConnection.updateWithValues(squery, [
+        mstdetails.Remarks == null,
+        user_id,
+      ]);
+    }
+
+    return (response = user_id);
   }
 }
 

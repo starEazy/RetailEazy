@@ -26,6 +26,7 @@ const postgreConnection = {
           return result;
       }
     } else {
+      console.log("idhar aaya kya");
       let result = await db.sequelize.query(query, {
         type: sequelize.QueryTypes.SELECT,
       });
@@ -37,6 +38,20 @@ const postgreConnection = {
       type: sequelize.QueryTypes.SELECT,
     });
     return result[0];
+  },
+  updateWithValues: async (query, values) => {
+    let result = await db.sequelize.query(query, {
+      bind: values,
+      type: sequelize.QueryTypes.INSERT,
+    });
+    return result;
+  },
+  selectWithValues: async (query, values) => {
+    let result = await db.sequelize.query(query, {
+      bind: values,
+      type: sequelize.QueryTypes.SELECT,
+    });
+    return result;
   },
 
   insertNewToken: async (UserCredential, UserId, Token) => {

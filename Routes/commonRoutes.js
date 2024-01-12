@@ -1,17 +1,11 @@
 "use strict";
 
 const express = require("express");
+const AuthController = require("../controllers/AuthController");
+const jwt_auth = require("../apps/JWT/jwt_auth");
 
 const router = express.Router();
 
-const {
-  commonApiResponse,
-  successResponse,
-} = require("../apps/helpers/customResponseTemplate");
-
-router.get("/test", (req, res) => {
-  console.log("Request recieved here");
-  return successResponse(req, res, "Request recieved here");
-});
+router.post("/UserLogOut", AuthController.APP_UserLogOut);
 
 module.exports = router;

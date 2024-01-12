@@ -25,6 +25,17 @@ const schemas = {
     OTPLoginPassword: Joi.string().allow(null).allow("").optional(),
     loginappname: Joi.string().allow(null).allow("").optional(),
   }),
+  getBrandSchema: Joi.object().keys({
+    alteredon: Joi.string().required(),
+    pageindexno: Joi.number().required(),
+    processtype: Joi.string().required(),
+  }),
+  logoutSchema: Joi.object().keys({
+    LedgerCode: Joi.string().required(),
+    MobileNo: Joi.string().required(),
+    BrandCode: Joi.string().required(),
+    Remarks: Joi.string().required(),
+  }),
 };
 
 module.exports = schemas;
