@@ -25,7 +25,7 @@ const schemas = {
     OTPLoginPassword: Joi.string().allow(null).allow("").optional(),
     loginappname: Joi.string().allow(null).allow("").optional(),
   }),
-  getBrandSchema: Joi.object().keys({
+  masterSchema: Joi.object().keys({
     alteredon: Joi.string().required(),
     pageindexno: Joi.number().required(),
     processtype: Joi.string().required(),

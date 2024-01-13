@@ -2,27 +2,27 @@
   URL_CustomerAuthOTP: '/api/Authenticate/CustomerAuthOTP', >> Done
   URL_BrandMaster: '/api/Master/GetBrand', >> Done 
   URL_DistributorMaster: '/api/Master/Distributor', >> Done 
-  URL_GetDealer: '/api/Master/GetDealer', >> Garvish
-  URL_ItemMaster: '/api/Master/Item', >> Garvish
-  URL_ItemGroupMaster: '/api/Master/ITEMGROUPMASTER', >> Garvish
-  URL_UnitMaster: '/api/Master/Unit', >> Garvish
-  URL_Division: '/api/Master/Division', >> Garvish
+  URL_GetDealer: '/api/Master/GetDealer', >> Garvish Done
+  URL_ItemMaster: '/api/Master/Item', >> Garvish Done
+  URL_ItemGroupMaster: '/api/Master/ITEMGROUPMASTER', >> Garvish Done
+  URL_UnitMaster: '/api/Master/Unit', >> Garvish Done
+  URL_Division: '/api/Master/Division', >> Garvish Done
   URL_UserDivisionMapping: '/api/Master/UserDivisionMapping', >> Subham
-  URL_CityMaster: '/api/Master/GetCity', >> Subham
-  URL_StateMaster: '/api/Master/GetState', >> Subham
-  URL_CountryMaster: "/api/Master/GetCountry",  >> Subham
+  URL_CityMaster: '/api/Master/GetCity', >> Subham Done
+  URL_StateMaster: '/api/Master/GetState', >> Subham Done
+  URL_CountryMaster: "/api/Master/GetCountry",  >> Subham Done
   URL_GetPlacedOrder: '/api/Order/GetPlacedOrder',
   URL_GetReceivedOrder: '/api/Order/GetReceivedOrder',
   URL_GetBillingDetail: '/api/Order/GetBillingDetail',
-  URL_GetDesignation: '/api/Master/GetDesignation', >> Subham
-  URL_DistributorDivisionTagging: '/api/Master/DistributorDivisionTagging',
-  URL_PrimaryCategory: '/api/Master/PrimaryCategory',
-  URL_SecondaryCategory: '/api/Master/SecondaryCategory',
+  URL_GetDesignation: '/api/Master/GetDesignation', >> Subham Done
+  URL_DistributorDivisionTagging: '/api/Master/DistributorDivisionTagging', >> Done
+  URL_PrimaryCategory: '/api/Master/PrimaryCategory', >> Done
+  URL_SecondaryCategory: '/api/Master/SecondaryCategory', >> Done
   URL_PurchaseInvoice: '/api/purchaseinvoice/GetDetail',
-  URL_SaleMaster: '/api/Master/DSDLRCONTACTDETAIL',
+  URL_SaleMaster: '/api/Master/DSDLRCONTACTDETAIL', >> Done 
   URL_SavePurchaseInvoice: "/api/purchaseinvoice/save",
-  URL_NotificationData: "/api/Master/NotificationData",
-  URL_GetHsnMaster: "/api/Master/GetHsnMaster",
+  URL_NotificationData: "/api/Master/NotificationData", >> Done
+  URL_GetHsnMaster: "/api/Master/GetHsnMaster", >> Done
   URL_SubmitOrder: '/api/Order/POST',
   URL_ClientAuth: "/api/Authenticate/AppAuth",
   URL_UpdateProfile: "/api/Authenticate/UpdateProfile",
@@ -41,14 +41,14 @@
   URL_PlaceOrderCancel: "/api/Order/PlaceOrderCancel",
   URL_ReceivedOrderCancel: "/api/Order/ReceivedOrderCancel",
   URL_PurchaseInvoiceDetails: "/api/purchaseinvoice/GetDetail",
-  URL_SalesPersonDetails: "/api/Master/DSDLRCONTACTDETAIL",
+  URL_SalesPersonDetails: "/api/Master/DSDLRCONTACTDETAIL", >> Done
   URL_ManualErrorLog: "/api/manualerrorlogsync/save",
   URL_AutomaticErrorLog: "/api/automaticerrorlogsync/save",
-  URL_AdvertisementData: "/api/Master/AdvertisementData",
+  URL_AdvertisementData: "/api/Master/AdvertisementData", >> Done
   URL_GlobalSetting: "/api/Authenticate/GlobalSetting",
   URL_UserApiLogDetail: "/api/UserApiLogDetail",
   URL_DmsSyncStatus: "/api/Master/DmsSyncStatus",
-  URL_LoginType: "/api/Master/LoginType",
+  URL_LoginType: "/api/Master/LoginType", >> Done
   URL_DMSGetPurchaseInvoice: "/api/Master/DMSGetPurchaseInvoice",
   URL_DMSGetOrder: "/api/Master/DMSGetOrder",
   URL_GetRedemptionType: "/api/Loyalty_Master/Getredemptiontype",
