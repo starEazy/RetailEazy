@@ -141,7 +141,7 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "DEALER", user_id);
+        let result = await super.MasterData(objval, "DEALER", user_id);
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -172,7 +172,7 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "ITEM", user_id);
+        let result = await super.MasterData(objval, "ITEM", user_id);
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -203,7 +203,7 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "ITEMGROUPMASTER", user_id);
+        let result = await super.MasterData(objval, "ITEMGROUPMASTER", user_id);
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -234,7 +234,7 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "UNIT", user_id);
+        let result = await super.MasterData(objval, "UNIT", user_id);
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -265,7 +265,7 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "DIVISION", user_id);
+        let result = await super.MasterData(objval, "DIVISION", user_id);
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -296,7 +296,7 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "USERDIVISION", user_id);
+        let result = await super.MasterData(objval, "USERDIVISION", user_id);
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -327,7 +327,7 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "CITY", user_id);
+        let result = await super.MasterData(objval, "CITY", user_id);
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -358,7 +358,7 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "STATE", user_id);
+        let result = await super.MasterData(objval, "STATE", user_id);
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -389,7 +389,7 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "COUNTRY", user_id);
+        let result = await super.MasterData(objval, "COUNTRY", user_id);
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -420,7 +420,7 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "DESIGNATION", user_id);
+        let result = await super.MasterData(objval, "DESIGNATION", user_id);
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -451,7 +451,11 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "DISTRIBUTORDIVISIONTAGGING", user_id);
+        let result = await super.MasterData(
+          objval,
+          "DISTRIBUTORDIVISIONTAGGING",
+          user_id
+        );
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -482,7 +486,7 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "PRIMARYCATEGORY", user_id);
+        let result = await super.MasterData(objval, "PRIMARYCATEGORY", user_id);
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -513,7 +517,11 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "SECONDARYCATEGORY", user_id);
+        let result = await super.MasterData(
+          objval,
+          "SECONDARYCATEGORY",
+          user_id
+        );
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -544,7 +552,11 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "DSDLRCONTACTDETAIL", user_id);
+        let result = await super.MasterData(
+          objval,
+          "DSDLRCONTACTDETAIL",
+          user_id
+        );
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -575,7 +587,11 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "NOTIFICATIONDATA", user_id);
+        let result = await super.MasterData(
+          objval,
+          "NOTIFICATIONDATA",
+          user_id
+        );
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -606,7 +622,7 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "HSNMASTER", user_id);
+        let result = await super.MasterData(objval, "HSNMASTER", user_id);
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -637,7 +653,11 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "DSDLRCONTACTDETAIL", user_id);
+        let result = await super.MasterData(
+          objval,
+          "DSDLRCONTACTDETAIL",
+          user_id
+        );
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -668,7 +688,11 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "ADVERTISEMENTDATA", user_id);
+        let result = await super.MasterData(
+          objval,
+          "ADVERTISEMENTDATA",
+          user_id
+        );
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
@@ -699,7 +723,38 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.MasterData(objval,  "LOGINTYPE", user_id);
+        let result = await super.MasterData(objval, "LOGINTYPE", user_id);
+
+        if (result != null || result != undefined) {
+          return successResponse(req, res, "success", result);
+        } else {
+          return errorResponse(req, res, "No record found.");
+        }
+      }
+    } catch (e) {
+      return errorResponse(
+        req,
+        res,
+        "UnExcepted has occured.We are working on it.",
+        e.toString()
+      );
+    }
+  }
+  static async SaveCustomerMaster(req, res) {
+    try {
+      const objval = req.body;
+      const { user_id } = req.user;
+
+      const { error } = joiSchema.masterSchema.validate(req.body, joiOptions);
+      if (error) {
+        return errorResponse(
+          req,
+          res,
+          "fields missing or invalid",
+          error.message
+        );
+      } else {
+        let result = await super.CreateCustomer(objval , user_id);
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);

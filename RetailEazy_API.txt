@@ -36,7 +36,7 @@
   URL_UpdateItemStock: "/api/Order/ItemStock",
   URL_UpdateKYC: "/api/Authenticate/UpdateKYC",
   URL_CreateBilling: "/api/Order/SaveBilling",
-  URL_SaveCustomerMaster: "/api/Master/SaveCustomerMaster",
+  URL_SaveCustomerMaster: "/api/Master/SaveCustomerMaster", >> In Progress
   URL_ImageUpload: "/api/Upload/Image",
   URL_PlaceOrderCancel: "/api/Order/PlaceOrderCancel",
   URL_ReceivedOrderCancel: "/api/Order/ReceivedOrderCancel",
@@ -47,10 +47,9 @@
   URL_AdvertisementData: "/api/Master/AdvertisementData", >> Done
   URL_GlobalSetting: "/api/Authenticate/GlobalSetting",
   URL_UserApiLogDetail: "/api/UserApiLogDetail",
-  URL_DmsSyncStatus: "/api/Master/DmsSyncStatus",
   URL_LoginType: "/api/Master/LoginType", >> Done
   URL_DMSGetPurchaseInvoice: "/api/Master/DMSGetPurchaseInvoice",
-  URL_DMSGetOrder: "/api/Master/DMSGetOrder",
+  URL_DMSGetOrder: "/api/Master/DMSGetOrder", >> Garvish
   URL_GetRedemptionType: "/api/Loyalty_Master/Getredemptiontype",
   URL_GetVendor: "/api/Loyalty_Master/GetVender",
   URL_GetCatalogue: "/api/Loyalty_Master/GetCatalogue",
@@ -60,8 +59,8 @@
   URL_GetTransactionDetail: "/api/Loyalty_transaction/GetTransactionDetail",
   URL_Loyalty_delivery: "/api/Loyalty_delivery/POST",
   URL_Loyalty_transaction: "/api/Loyalty_transaction/POST",
-  URL_UserLogout: '/api/UserLogOut',
-  URL_GET_DISTRIBUTOR_DMS_ORDER: '/api/Master/DMSGetDistributorOrder',
+  URL_UserLogout: '/api/UserLogOut', >> Done 
+  URL_GET_DISTRIBUTOR_DMS_ORDER: '/api/Master/DMSGetDistributorOrder', >> Garvish
  URL_BulkFileUploadToAzureF: "https://image.eazydms.in/api/BulkFileUploadToAzure",
  URL_AzuzeLogin:"https://image.eazydms.in/api/Login",
 
