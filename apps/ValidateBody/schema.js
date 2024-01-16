@@ -36,6 +36,38 @@ const schemas = {
     BrandCode: Joi.string().required(),
     Remarks: Joi.string().required(),
   }),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  dmsMasterSchema: Joi.object().keys({
+    alteredon : Joi.string().required(),
+    pageindexno :  Joi.number().required(),
+    LedgerCode : Joi.string().required(),
+    DesignationName  : Joi.string().required(),
+    BrandCode  : Joi.string().required()
+  }),
 };
 
 module.exports = schemas;
