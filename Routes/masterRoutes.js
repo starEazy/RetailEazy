@@ -80,5 +80,15 @@ router.post(
   jwt_auth.authenticate,
   MasterController.SaveCustomerMaster
 );
+router.post(
+  "/DmsSyncStatus",
+  jwt_auth.authenticate,
+  MasterController.dmsSyncStatus
+);
+router.post(
+  "/DMSGetPurchaseInvoice",
+  jwt_auth.authenticate,
+  MasterController.DMSGetPurchaseInvoice
+);
 
 module.exports = router;

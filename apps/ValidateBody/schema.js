@@ -36,6 +36,30 @@ const schemas = {
     BrandCode: Joi.string().required(),
     Remarks: Joi.string().required(),
   }),
+  syncStatusSchema: Joi.object().keys({
+    ModelName: Joi.string().required(),
+    MasterIds: Joi.string().required(),
+  }),
+
+  saveCustomerSchema: Joi.object().keys({
+    row_id: Joi.number().required(),
+    brand_id: Joi.number().required(),
+    customer_name: Joi.string().required(),
+    address: Joi.string().required(),
+    pincode: Joi.string().required(),
+    email_id: Joi.string().required(),
+    gstin_no: Joi.string().allow("").optional(),
+    city_id: Joi.number().required(),
+    state_id: Joi.number().required(),
+    country_id: Joi.number().required(),
+    contact_no: Joi.string().allow("").optional(),
+    pan_no: Joi.string().required(),
+    upi_id: Joi.string().allow("").optional(),
+    paytm_mob_no: Joi.string().required(),
+    designation_id: Joi.number().required(),
+    margin: Joi.number().required(),
+    Devicetype: Joi.number().required(),
+  }),
 };
 
 module.exports = schemas;

@@ -1,5 +1,5 @@
  LOGIN_URL: '/api/Authenticate/CustomerAuth', >> Done 
-  URL_CustomerAuthOTP: '/api/Authenticate/CustomerAuthOTP', >> Done
+  URL_CustomerAuthOTP: '/api/Authenticate/CustomerAuthOTP' ,
   URL_BrandMaster: '/api/Master/GetBrand', >> Done 
   URL_DistributorMaster: '/api/Master/Distributor', >> Done 
   URL_GetDealer: '/api/Master/GetDealer', >> Garvish Done
@@ -36,7 +36,7 @@
   URL_UpdateItemStock: "/api/Order/ItemStock",
   URL_UpdateKYC: "/api/Authenticate/UpdateKYC",
   URL_CreateBilling: "/api/Order/SaveBilling",
-  URL_SaveCustomerMaster: "/api/Master/SaveCustomerMaster", >> In Progress
+  URL_SaveCustomerMaster: "/api/Master/SaveCustomerMaster", >> Done
   URL_ImageUpload: "/api/Upload/Image",
   URL_PlaceOrderCancel: "/api/Order/PlaceOrderCancel",
   URL_ReceivedOrderCancel: "/api/Order/ReceivedOrderCancel",
@@ -47,8 +47,9 @@
   URL_AdvertisementData: "/api/Master/AdvertisementData", >> Done
   URL_GlobalSetting: "/api/Authenticate/GlobalSetting",
   URL_UserApiLogDetail: "/api/UserApiLogDetail",
+  URL_DmsSyncStatus: "/api/Master/DmsSyncStatus", >> Subham Done
   URL_LoginType: "/api/Master/LoginType", >> Done
-  URL_DMSGetPurchaseInvoice: "/api/Master/DMSGetPurchaseInvoice",
+  URL_DMSGetPurchaseInvoice: "/api/Master/DMSGetPurchaseInvoice", >>Subhan  
   URL_DMSGetOrder: "/api/Master/DMSGetOrder", >> Garvish
   URL_GetRedemptionType: "/api/Loyalty_Master/Getredemptiontype",
   URL_GetVendor: "/api/Loyalty_Master/GetVender",

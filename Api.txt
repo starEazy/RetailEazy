@@ -1,0 +1,58 @@
+  URL_GetPlacedOrder: '/api/Order/GetPlacedOrder',
+  URL_GetReceivedOrder: '/api/Order/GetReceivedOrder',
+  URL_GetBillingDetail: '/api/Order/GetBillingDetail',
+  URL_SubmitOrder: '/api/Order/POST',
+  URL_PostOrderList: "/api/Order/POST",
+  URL_UpdateItemStock: "/api/Order/ItemStock",
+  URL_CreateBilling: "/api/Order/SaveBilling",
+  URL_PlaceOrderCancel: "/api/Order/PlaceOrderCancel",
+  URL_ReceivedOrderCancel: "/api/Order/ReceivedOrderCancel",
+
+
+  URL_PurchaseInvoice: '/api/purchaseinvoice/GetDetail',
+  URL_SavePurchaseInvoice: "/api/purchaseinvoice/save",
+  URL_PurchaseInvoiceDetails: "/api/purchaseinvoice/GetDetail",
+
+
+
+  URL_CustomerAuthOTP: '/api/Authenticate/CustomerAuthOTP', 
+  URL_ClientAuth: "/api/Authenticate/AppAuth",
+  URL_UpdateProfile: "/api/Authenticate/UpdateProfile",
+  URL_Login: "/api/Authenticate/CustomerAuth",
+  URL_ChangePassword: "/api/Authenticate/ChangePassword",
+  URL_UpdateKYC: "/api/Authenticate/UpdateKYC",
+  URL_GlobalSetting: "/api/Authenticate/GlobalSetting",
+
+
+
+  URL_GenerateOTP: "/api/Email/OTP",
+  URL_ForgotPassword: "/api/Email/ForgetPassword",
+
+
+
+  URL_GetRedemptionType: "/api/Loyalty_Master/Getredemptiontype",
+  URL_GetVendor: "/api/Loyalty_Master/GetVender",
+  URL_GetCatalogue: "/api/Loyalty_Master/GetCatalogue",
+  URL_GetDelivery: "/api/Loyalty_Master/GetDelivery",
+  URL_GetBrandCatalogue: "/api/Loyalty_Master/GetBrandCatalogue",
+  URL_GetBrandCatalogueMaster: "/api/Loyalty_Master/GetBrandCatalogue_master",
+  URL_GetTransactionDetail: "/api/Loyalty_transaction/GetTransactionDetail",
+  URL_Loyalty_delivery: "/api/Loyalty_delivery/POST",
+  URL_Loyalty_transaction: "/api/Loyalty_transaction/POST",
+
+
+
+
+  URL_UPIPayment: "/api/Payment/UPIPayment",
+  URL_DashboardChart: "/api/Dashboards/Chart",
+  URL_ImageUpload: "/api/Upload/Image",
+  URL_ManualErrorLog: "/api/manualerrorlogsync/save",
+  URL_AutomaticErrorLog: "/api/automaticerrorlogsync/save",
+  URL_UserApiLogDetail: "/api/UserApiLogDetail",
+  URL_DMSGetPurchaseInvoice: "/api/Master/DMSGetPurchaseInvoice", >> subham
+  URL_DMSGetOrder: "/api/Master/DMSGetOrder", >> Garvish
+  URL_UserLogout: '/api/UserLogOut', >> Done 
+  URL_GET_DISTRIBUTOR_DMS_ORDER: '/api/Master/DMSGetDistributorOrder', >> Garvish
+ URL_BulkFileUploadToAzureF: "https://image.eazydms.in/api/BulkFileUploadToAzure",
+ URL_AzuzeLogin:"https://image.eazydms.in/api/Login",
+
