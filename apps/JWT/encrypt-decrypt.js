@@ -1,7 +1,6 @@
 const crypto = require("crypto");
 
 function buildToken(userId, userName) {
-  console.log("Build Token");
 
   let toEncrypt = "";
 
@@ -85,16 +84,6 @@ function getHash(plainText) {
   }
 }
 
-// Example usage
-// const plainText = "YourPlainText";
-// const encryptedText = stringEncrypt(plainText);
-// console.log("Encrypted Text:", encryptedText);
 
-// // Example usage
-// const userId = 123;
-// const userName = "JohnDoe";
-// const token = buildToken(userId, userName);
-
-// console.log("Generated Token:", token);
 
 module.exports = { buildToken };

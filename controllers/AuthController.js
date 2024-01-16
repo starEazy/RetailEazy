@@ -94,7 +94,6 @@ class AuthController extends AuthService {
     try {
       const objval = req.body;
 
-      console.log(objval);
       const { error } = joiSchema.logoutSchema.validate(req.body, joiOptions);
       if (error) {
         return errorResponse(

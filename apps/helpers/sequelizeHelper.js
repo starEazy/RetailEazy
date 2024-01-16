@@ -5,7 +5,6 @@ const sequelize = require("sequelize");
 const postgreConnection = {
   query: async (query, types) => {
     if (types) {
-      console.log("types>>>>>>>>>.");
       let result;
       switch (types) {
         case "select":
@@ -19,14 +18,12 @@ const postgreConnection = {
           });
           return result;
         case "update":
-          console.log("update trigered >>>>>>>>>>>>");
           result = await db.sequelize.query(query, {
             type: sequelize.QueryTypes.UPDATE,
           });
           return result;
       }
     } else {
-      console.log("idhar aaya kya");
       let result = await db.sequelize.query(query, {
         type: sequelize.QueryTypes.SELECT,
       });

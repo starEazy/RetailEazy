@@ -68,7 +68,6 @@ class MasterController extends MasterService {
       const objval = req.body;
       const { user_id } = req.user;
 
-      console.log(objval);
       const { error } = joiSchema.masterSchema.validate(req.body, joiOptions);
       if (error) {
         return errorResponse(
@@ -100,7 +99,6 @@ class MasterController extends MasterService {
       const objval = req.body;
       const { user_id } = req.user;
 
-      console.log(objval);
       const { error } = joiSchema.masterSchema.validate(req.body, joiOptions);
       if (error) {
         return errorResponse(
@@ -745,7 +743,7 @@ class MasterController extends MasterService {
       const objval = req.body;
       const { user_id } = req.user;
 
-      const { error } = joiSchema.masterSchema.validate(req.body, joiOptions);
+      const { error } = joiSchema.saveCustomerSchema.validate(req.body, joiOptions);
       if (error) {
         return errorResponse(
           req,
@@ -754,7 +752,68 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.CreateCustomer(objval , user_id);
+        let result = await super.CreateCustomer(objval, user_id);
+
+        if (result != null || result != undefined) {
+          return successResponse(req, res, "success", result);
+        } else {
+          return errorResponse(req, res, "No record found.");
+        }
+      }
+    } catch (e) {
+      return errorResponse(
+        req,
+        res,
+        "UnExcepted has occured.We are working on it.",
+        e.toString()
+      );
+    }
+  }
+
+  static async dmsSyncStatus(req, res) {
+    try {
+      const objval = req.body;
+
+      const { error } = joiSchema.syncStatusSchema.validate(objval, joiOptions);
+      if (error) {
+        return errorResponse(
+          req,
+          res,
+          "fields missing or invalid",
+          error.message
+        );
+      } else {
+        let result = await super.dmssyncstatusData(objval);
+
+        if (result != null || result != undefined) {
+          return successResponse(req, res, "success", result);
+        } else {
+          return errorResponse(req, res, "No record found.");
+        }
+      }
+    } catch (e) {
+      return errorResponse(
+        req,
+        res,
+        "UnExcepted has occured.We are working on it.",
+        e.toString()
+      );
+    }
+  }
+  static async DMSGetPurchaseInvoice(req, res) {
+    try {
+      const objval = req.body;
+
+      const { error } = joiSchema.syncStatusSchema.validate(objval, joiOptions);
+      if (error) {
+        return errorResponse(
+          req,
+          res,
+          "fields missing or invalid",
+          error.message
+        );
+      } else {
+        let result = await super.dmssyncstatusData(objval);
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);
