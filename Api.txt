@@ -9,9 +9,8 @@
   URL_ReceivedOrderCancel: "/api/Order/ReceivedOrderCancel",
 
 
-  URL_PurchaseInvoice: '/api/purchaseinvoice/GetDetail',
-  URL_SavePurchaseInvoice: "/api/purchaseinvoice/save",
-  URL_PurchaseInvoiceDetails: "/api/purchaseinvoice/GetDetail",
+  URL_PurchaseInvoice: '/api/purchaseinvoice/GetDetail', << Garvish
+  URL_SavePurchaseInvoice: "/api/purchaseinvoice/save", << Subham
 
 
 
@@ -48,11 +47,12 @@
   URL_ImageUpload: "/api/Upload/Image",
   URL_ManualErrorLog: "/api/manualerrorlogsync/save",
   URL_AutomaticErrorLog: "/api/automaticerrorlogsync/save",
-  URL_UserApiLogDetail: "/api/UserApiLogDetail",
-  URL_DMSGetPurchaseInvoice: "/api/Master/DMSGetPurchaseInvoice", >> subham
-  URL_DMSGetOrder: "/api/Master/DMSGetOrder", >> Garvish
-  URL_UserLogout: '/api/UserLogOut', >> Done 
-  URL_GET_DISTRIBUTOR_DMS_ORDER: '/api/Master/DMSGetDistributorOrder', >> Garvish
- URL_BulkFileUploadToAzureF: "https://image.eazydms.in/api/BulkFileUploadToAzure",
- URL_AzuzeLogin:"https://image.eazydms.in/api/Login",
+  URL_UserApiLogDetail: "/api/UserApiLogDetail"
+  URL_BulkFileUploadToAzureF: "https://image.eazydms.in/api/BulkFileUploadToAzure",
+  URL_AzuzeLogin:"https://image.eazydms.in/api/Login",
+  
+  
+  URL_DMSGetPurchaseInvoice: "/api/Master/DMSGetPurchaseInvoice", >> subham >> Pending
+  URL_DMSGetOrder: "/api/Master/DMSGetOrder", >> Garvish >> Pending
+  URL_GET_DISTRIBUTOR_DMS_ORDER: '/api/Master/DMSGetDistributorOrder', >> Garvish >> Pending 
 
