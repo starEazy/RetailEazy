@@ -11,13 +11,13 @@ const bodyparser = require("body-parser");
 const debug = require("debug");
 const numCPUs = os.cpus().length;
 const commonRoutes = require("./Routes/commonRoutes");
+const orderRoutes = require("./Routes/orderRoutes");
+const invoiceRoutes = require("./Routes/invoiceRoutes");
 const AuthRoutes = require("./Routes/AuthRoutes");
 const masterRoutes = require("./Routes/masterRoutes");
 const compression = require("compression");
 // const db = require("./database/models/index");
 // db.sequelize.sync();
-
-
 
 if (cluster.isMaster) {
   // Fork workers
@@ -63,27 +63,22 @@ if (cluster.isMaster) {
   // });
   const shouldCompress = (req, res) => {
     if (req.headers["x-no-compression"]) {
-      // don't compress responses if this request header is present
       return false;
     }
-
-    // fallback to standard compression
     return compression.filter(req, res);
   };
 
   app.use(
     compression({
-      // filter decides if the response should be compressed or not,
-      // based on the `shouldCompress` function above
       filter: shouldCompress,
-      // threshold is the byte threshold for the response body size
-      // before compression is considered, the default is 1kb
       threshold: 9,
     })
   );
   app.use("/api", commonRoutes);
   app.use("/api/Authenticate", AuthRoutes);
   app.use("/api/Master", masterRoutes);
+  app.use("/api/purchaseinvoice", invoiceRoutes);
+  app.use("/api/Order", orderRoutes);
 
   app.use(
     cors({
