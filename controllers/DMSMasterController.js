@@ -33,7 +33,6 @@ class DMSMasterController extends DMSMasterService {
                 );
             } else {
                 const result = await super.GetPIOrderFromDms(objval, "GETORDER");
-                console.log(result,'....result');
 
                 if(IsError == true){
                     return errorResponse(req, res, "", result);
@@ -72,19 +71,19 @@ class DMSMasterController extends DMSMasterService {
                 error.message
                 );
             } else {
-                writeLog(`${objval.ToString()} + "Start api/Master/DMSGetDistributorOrder "`);
-                let result = await GetDistributorOrderFromDms(objval,"GETDMSDISTRIBUTORORDER")
+                writeLog(`${objval} + "Start api/Master/DMSGetDistributorOrder "`);
+                let result = await super.GetDistributorOrderFromDms(objval,"GETDMSDISTRIBUTORORDER")
                 if (IsError == true)
                 {
                     return errorResponse(req, res, "", result);
                 }
                 else
                 {
-                    if (!string.IsNullOrEmpty(result))
+                    if (result != "")
                     {
                         return successResponse(req, res, "success", result);
                     }
-                    else if (string.IsNullOrEmpty(result))
+                    else if (result == "")
                     {
                         return errorResponse(req, res, "Data not found", result);
                     }
