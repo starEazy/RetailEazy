@@ -47,9 +47,5 @@
   URL_UserApiLogDetail: "/api/UserApiLogDetail"
   URL_BulkFileUploadToAzureF: "https://image.eazydms.in/api/BulkFileUploadToAzure",
   URL_AzuzeLogin:"https://image.eazydms.in/api/Login",
-  
-  
-  URL_DMSGetPurchaseInvoice: "/api/Master/DMSGetPurchaseInvoice", >> subham >> Pending
-  URL_DMSGetOrder: "/api/Master/DMSGetOrder", >> Garvish >> Pending
-  URL_GET_DISTRIBUTOR_DMS_ORDER: '/api/Master/DMSGetDistributorOrder', >> Garvish >> Pending 
+
 

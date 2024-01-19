@@ -94,11 +94,13 @@ router.post(
 );
 router.post(
   "/DMSGetOrder",
+  jwt_auth.checkDmsToken,
   jwt_auth.authenticate,
   DMSMasterController.DMSGetOrder
 );
 router.post(
   "/DMSGetDistributorOrder",
+  jwt_auth.checkDmsToken,
   jwt_auth.authenticate,
   DMSMasterController.DMSGetDistributorOrder
 );
