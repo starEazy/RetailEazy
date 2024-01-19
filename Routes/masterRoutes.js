@@ -88,19 +88,19 @@ router.post(
 );
 router.post(
   "/DMSGetPurchaseInvoice",
-  jwt_auth.authenticate,
+  jwt_auth.checkDmsToken,
+  // jwt_auth.authenticate,
   MasterController.DMSGetPurchaseInvoice
 );
-
-
-
-
-
-
-
-
-
-router.post("/DMSGetOrder", jwt_auth.authenticate, DMSMasterController.DMSGetOrder);
-router.post("/DMSGetDistributorOrder", jwt_auth.authenticate, DMSMasterController.DMSGetDistributorOrder);
+router.post(
+  "/DMSGetOrder",
+  jwt_auth.authenticate,
+  DMSMasterController.DMSGetOrder
+);
+router.post(
+  "/DMSGetDistributorOrder",
+  jwt_auth.authenticate,
+  DMSMasterController.DMSGetDistributorOrder
+);
 
 module.exports = router;

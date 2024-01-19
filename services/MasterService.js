@@ -21,11 +21,9 @@ class MasterService {
     const alteredon = objval.alteredon.slice(0, 19).replace("T", " "); // Format date as 'yyyy-MM-dd HH:mm:ss'
     const sQuery = `SELECT * FROM getmaster('${alteredon}', ${tokenDetails.UserId}, '${masterName}', ${objval.pageindexno}, '${objval.processtype}')`;
 
-
     writeLog(`---Get Master Data Query---${sQuery}`);
 
     const data = await postgreConnection.query(sQuery);
-
 
     if (data && data.length > 0) {
       result = JSON.parse(data[0].getmaster);
@@ -64,7 +62,6 @@ class MasterService {
       }
 
       for (const mstdetails of JsonObject.CustomerDetail) {
-
         let WebCustomerNo = "";
         let CustomerId = 0;
         const squeryDL = await MasterService.getLedgerDetails(
@@ -77,7 +74,6 @@ class MasterService {
           WebCustomerNo = squeryDL[0].ledgercode;
           CustomerId = squeryDL[0].ledgerid;
           Customer_id = `${CustomerId},${Customer_id}`;
-
         } else {
           const squeryDLDetails = await MasterService.getLedgerDetailsByType(
             mstdetails.brand_id,
