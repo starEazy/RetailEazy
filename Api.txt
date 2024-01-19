@@ -1,6 +1,4 @@
-  URL_GetPlacedOrder: '/api/Order/GetPlacedOrder',
-  URL_GetReceivedOrder: '/api/Order/GetReceivedOrder',
-  URL_GetBillingDetail: '/api/Order/GetBillingDetail',
+
   URL_SubmitOrder: '/api/Order/POST',
   URL_PostOrderList: "/api/Order/POST",
   URL_UpdateItemStock: "/api/Order/ItemStock",
@@ -9,7 +7,6 @@
   URL_ReceivedOrderCancel: "/api/Order/ReceivedOrderCancel",
 
 
-  URL_PurchaseInvoice: '/api/purchaseinvoice/GetDetail', << Garvish
   URL_SavePurchaseInvoice: "/api/purchaseinvoice/save", << Subham
 
 
