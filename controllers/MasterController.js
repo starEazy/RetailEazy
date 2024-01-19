@@ -7,6 +7,7 @@ const {
   errorResponse,
   successResponse,
 } = require("../apps/helpers/customResponseTemplate");
+const DMSMasterService = require("../services/DMSMasterServices");
 const joiOptions = {
   abortEarly: false, // include all errors
   allowUnknown: true, // ignore unknown props
@@ -743,7 +744,10 @@ class MasterController extends MasterService {
       const objval = req.body;
       const { user_id } = req.user;
 
-      const { error } = joiSchema.saveCustomerSchema.validate(req.body, joiOptions);
+      const { error } = joiSchema.saveCustomerSchema.validate(
+        req.body,
+        joiOptions
+      );
       if (error) {
         return errorResponse(
           req,
@@ -804,7 +808,7 @@ class MasterController extends MasterService {
     try {
       const objval = req.body;
 
-      const { error } = joiSchema.syncStatusSchema.validate(objval, joiOptions);
+      const { error } = joiSchema.dmsMasterSchema.validate(objval, joiOptions);
       if (error) {
         return errorResponse(
           req,
@@ -813,7 +817,7 @@ class MasterController extends MasterService {
           error.message
         );
       } else {
-        let result = await super.dmssyncstatusData(objval);
+        let result = await DMSMasterService.GetPIOrderFromDms(objval);
 
         if (result != null || result != undefined) {
           return successResponse(req, res, "success", result);

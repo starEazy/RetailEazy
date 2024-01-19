@@ -1,5 +1,7 @@
 "use strict";
 
-class InvoiceService {}
+class InvoiceService {
+  static async saveInvoiceDetails() {}
+}
 
 module.exports = InvoiceService;
