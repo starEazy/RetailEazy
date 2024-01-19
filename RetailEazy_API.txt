@@ -7,7 +7,7 @@
   URL_ItemGroupMaster: '/api/Master/ITEMGROUPMASTER', >> Garvish Done
   URL_UnitMaster: '/api/Master/Unit', >> Garvish Done
   URL_Division: '/api/Master/Division', >> Garvish Done
-  URL_UserDivisionMapping: '/api/Master/UserDivisionMapping', >> Subham
+  URL_UserDivisionMapping: '/api/Master/UserDivisionMapping', >> Subham given sequelize error
   URL_CityMaster: '/api/Master/GetCity', >> Subham Done
   URL_StateMaster: '/api/Master/GetState', >> Subham Done
   URL_CountryMaster: "/api/Master/GetCountry",  >> Subham Done

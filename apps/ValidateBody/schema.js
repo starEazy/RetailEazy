@@ -66,6 +66,10 @@ const schemas = {
     margin: Joi.number().required(),
     Devicetype: Joi.number().required(),
   }),
+  purchaseInvoiceSchema:Joi.object().keys({
+    alteredon : Joi.string().required(),
+    pageindexno : Joi.number().required()
+  }),
 };
 
 module.exports = schemas;
