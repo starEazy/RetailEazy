@@ -1,6 +1,5 @@
 "use strict";
 
-const { successResponse, errorResponse } = require("../apps/helpers/customResponseTemplate");
 const { error } = require("winston");
 const {
   successResponse,
@@ -9,6 +8,11 @@ const {
 } = require("../apps/helpers/customResponseTemplate");
 const InvoiceService = require("../services/invoiceService");
 const joiSchema = require("../apps/ValidateBody/schema");
+const joiOptions = {
+  abortEarly: false, // include all errors
+  allowUnknown: true, // ignore unknown props
+  stripUnknown: true, // remove unknown props
+};
 
 class InvoiceController extends InvoiceService {
   constructor() {
@@ -70,6 +74,7 @@ class InvoiceController extends InvoiceService {
   static async GetBillingDetail(req, res){
     try {
       let objvalue = req.body;
+      const { user_id } = req.user;
       const { error } = joiSchema.purchaseInvoiceSchema.validate(objvalue, joiOptions);
       if (error) {
         return errorResponse(
@@ -79,9 +84,9 @@ class InvoiceController extends InvoiceService {
           error.message
         );
       } else {
-        let ObjResult = await super.GetOrderJson(objvalue,"PURCHASEINVOICE");
+        let ObjResult = await super.GetOrderJson(objvalue,user_id,"PURCHASEINVOICE");
         if (ObjResult != ""){
-          return successResponse(req, res, "success", result);
+          return successResponse(req, res, "success", ObjResult);
         }
         else{
           return errorResponse(req, res, "No record found.");
