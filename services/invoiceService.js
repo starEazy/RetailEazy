@@ -7,7 +7,7 @@ class InvoiceService {
     writeLog("Start Get Order/Billing API ");
     let sQuery = `SELECT * FROM getbillingdetail('${objparm.alteredon}',${Userid},'${masterName}','${objparm.pageindexno}')`;
     writeLog(`Get Order/Billing Execute Function ${sQuery}`);
-    let result = postgreConnection.query(sQuery);
+    let result = await postgreConnection.query(sQuery);
     return result;
   }
   static async saveInvoiceDetails() {}
