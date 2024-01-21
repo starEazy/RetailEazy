@@ -1,7 +1,7 @@
 
   URL_SubmitOrder: '/api/Order/POST',
   URL_PostOrderList: "/api/Order/POST",
-  URL_UpdateItemStock: "/api/Order/ItemStock",
+  URL_UpdateItemStock: "/api/Order/ItemStock", >> Done >> TBT
   URL_CreateBilling: "/api/Order/SaveBilling",
   URL_PlaceOrderCancel: "/api/Order/PlaceOrderCancel",
   URL_ReceivedOrderCancel: "/api/Order/ReceivedOrderCancel",
@@ -12,12 +12,11 @@
 
 
   URL_CustomerAuthOTP: '/api/Authenticate/CustomerAuthOTP', 
-  URL_ClientAuth: "/api/Authenticate/AppAuth",
-  URL_UpdateProfile: "/api/Authenticate/UpdateProfile",
-  URL_Login: "/api/Authenticate/CustomerAuth",
-  URL_ChangePassword: "/api/Authenticate/ChangePassword",
-  URL_UpdateKYC: "/api/Authenticate/UpdateKYC",
-  URL_GlobalSetting: "/api/Authenticate/GlobalSetting",
+  URL_ClientAuth: "/api/Authenticate/AppAuth", >> Subham Done >> TBT
+  URL_UpdateProfile: "/api/Authenticate/UpdateProfile", >> Subham Done >> TBT
+  URL_ChangePassword: "/api/Authenticate/ChangePassword", >> Subham Done >> TBT
+  URL_UpdateKYC: "/api/Authenticate/UpdateKYC", >> Subham Done >> TBT
+  URL_GlobalSetting: "/api/Authenticate/GlobalSetting", >> Subham Done >> TBT
 
 
 

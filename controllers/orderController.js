@@ -8,6 +8,7 @@ const {
   errorResponse,
 } = require("../apps/helpers/customResponseTemplate");
 const joiSchema = require("../apps/ValidateBody/schema");
+const { writeLog } = require("../apps/helpers/utils");
 
 const joiOptions = {
   abortEarly: false, // include all errors
@@ -125,6 +126,28 @@ module.exports = class OrderController extends OrderService {
         res,
         "Unexpected error occured , We are working on it",
         e.toString()
+      );
+    }
+  }
+
+  static async itemStock(req, res) {
+    try {
+      const { user_id } = req.body;
+      const ObjResult = await super.ItemStockPost(req.body, user_id);
+
+      if (ObjResult.status) {
+        return successResponse(req, res, ObjResult.message);
+      } else {
+        return errorResponse(req, res, ObjResult.message);
+      }
+    } catch (ex) {
+      writeLog(`${req.url} ItemStock  POST`);
+
+      return errorResponse(
+        req,
+        res,
+        "Unexpected error occurred. We are working on it.",
+        ex.message
       );
     }
   }

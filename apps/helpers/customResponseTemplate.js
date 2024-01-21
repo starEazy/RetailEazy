@@ -105,13 +105,14 @@ const notFoundResponse = (req, res, msg) => {
   });
 };
 
-const internalServerErrorResponse = (req, res, msg) => {
+const internalServerErrorResponse = (req, res, msg, result) => {
   return new CustomMessage(res).error(StatusCodes.INTERNAL_SERVER_ERROR, {
     status_type: ReasonPhrases.INTERNAL_SERVER_ERROR,
     code: StatusCodes.INTERNAL_SERVER_ERROR,
     method: req.method,
     status: false,
     msg: msg,
+    result: result,
   });
 };
 

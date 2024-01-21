@@ -1,7 +1,6 @@
 const crypto = require("crypto");
 
 function buildToken(userId, userName) {
-
   let toEncrypt = "";
 
   if (userId > 0) {
@@ -74,7 +73,7 @@ function stringEncrypt(
   }
 }
 
-function getHash(plainText) {
+function  getHash(plainText) {
   try {
     const hashEngine = crypto.createHash("md5");
     const hashBytes = hashEngine.update(plainText, "utf-8").digest("hex");
@@ -84,6 +83,50 @@ function getHash(plainText) {
   }
 }
 
+function stringDecrypt(
+  encrypted,
+  prm_key = null,
+  prm_IV = null,
+  b64Mode = false
+) {
+  try {
+    if (b64Mode) {
+      prm_IV = "741952hheeyy66#cs!9hjv887mxx7@8y";
+    }
 
+    // Assuming 'EncryptionKey' and 'GetHash' functions need to be defined or replaced as per your application's context
+    prm_key = EncryptionKey; // Replace with your key
+    const keyBytes = crypto
+      .createHash("sha256")
+      .update(getHash(prm_key))
+      .digest();
 
-module.exports = { buildToken };
+    // Set up the IV
+    let IV;
+    if (prm_IV === null) {
+      IV = Buffer.from([
+        50, 199, 10, 159, 132, 55, 236, 189, 51, 243, 244, 91, 17, 136, 39, 230,
+      ]);
+    } else {
+      IV = Buffer.from(prm_IV, "ascii");
+    }
+
+    const decipher = crypto.createDecipheriv("aes-256-cbc", keyBytes, IV);
+    if (b64Mode) {
+      decipher.setAutoPadding(false);
+    }
+
+    let decrypted = decipher.update(encrypted, "base64", "utf8");
+    decrypted += decipher.final("utf8");
+
+    let str1 = decrypted.replace(/\0/g, "");
+    str1 = str1.replace(/a\.m\./g, "AM");
+    str1 = str1.replace(/p\.m\./g, "PM");
+
+    return str1;
+  } catch (ex) {
+    return ex.message;
+  }
+}
+
+module.exports = { buildToken, getHash, stringDecrypt, stringEncrypt };

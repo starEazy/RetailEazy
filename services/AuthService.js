@@ -2,7 +2,7 @@
 
 const { writeLog } = require("../apps/helpers/utils");
 const postgreConnection = require("../apps/helpers/sequelizeHelper");
-const { buildToken } = require("../apps/JWT/encrypt-decrypt");
+const { buildToken, stringDecrypt } = require("../apps/JWT/encrypt-decrypt");
 const { Jwt } = require("../apps/JWT/jwt");
 const { response } = require("express");
 
@@ -271,6 +271,273 @@ class AuthService {
     }
 
     return (response = user_id);
+  }
+
+  static async IsDownLoadApp(Uri) {
+    const objresp = {
+      URL: "",
+      TallyExpiry_date: "01-Jan-2023",
+      ClientID: "",
+      status: false,
+      Result: "",
+    };
+
+    try {
+      if (!Uri) {
+        return objresp;
+      }
+
+      const clientUrl = stringDecrypt(Uri, null, null, true);
+      if (!clientUrl) {
+        return objresp;
+      }
+
+      const query = `SELECT * FROM agencymaster WHERE (lower(agencycode) = LOWER('${clientUrl}') OR lower(agencyname) = lower('${clientUrl}')) AND inactive=false`;
+
+      const result = await postgreConnection.query(query);
+
+      if (result.length === 1) {
+        objresp.URL = result[0].weburl;
+        objresp.ClientID = result[0].client_id.toString();
+        objresp.status = true;
+        objresp.Result = "Authentication Successfully";
+      } else {
+        objresp.status = false;
+        objresp.Result = "Client Name OR Client Url Wrong.";
+      }
+
+      return objresp;
+    } catch (error) {
+      console.log(error);
+      return objresp;
+    }
+  }
+
+  static async updateProfile(objupdateprofile, UserId) {
+    try {
+      const squery = `UPDATE tbl_registration SET 
+                      address = $1, 
+                      cityid = $2, 
+                      pincode = $3, 
+                      stateid = $4, 
+                      latitude = $5, 
+                      longitude = $6, 
+                      devicetype = $7, 
+                      alteredon = now() 
+                      WHERE registrationid = $8 
+                      RETURNING registrationid`;
+
+      const values = [
+        objupdateprofile.address,
+        objupdateprofile.cityid,
+        objupdateprofile.pincode,
+        objupdateprofile.stateid,
+        objupdateprofile.latitude,
+        objupdateprofile.longitude,
+        objupdateprofile.Devicetype,
+        UserId,
+      ];
+      writeLog(`Profile Update Query   ${squery}`);
+
+      await postgreConnection.updateWithValues(squery, values);
+      await AuthService.updateDOB_DOA(objupdateprofile, UserId, client); // Assuming this is another function to be converted to JS
+
+      return { GetStaus: true, GetMessage: "Profile Update successfully." };
+    } catch (ex) {
+      return { GetStaus: false, GetMessage: ex.message };
+    }
+  }
+
+  static async updateDOB_DOA(objupdateprofile, userid) {
+    try {
+      let cityname = null;
+
+      let squery = "SELECT cityname FROM tbl_citymaster WHERE cityid = $1";
+      const cityRes = await postgreConnection.selectWithValues(squery, [
+        objupdateprofile.cityid,
+      ]);
+      if (cityRes.length > 0) {
+        cityname = cityRes[0].cityname;
+      }
+
+      squery =
+        "SELECT DISTINCT lm.ledgercode, bm.brandcode, bm.brand_url, lm.ledgerid, lm.brandid " +
+        "FROM tbl_registration z " +
+        "INNER JOIN tbl_userdesignationmapping z1 ON z.registrationid = z1.userid " +
+        "INNER JOIN tbl_ledgermaster lm ON lm.ledgercode = z1.dmsledgercode AND lm.brandid = z1.brandid " +
+        "INNER JOIN tbl_brandmaster bm ON bm.brandid = z1.brandid " +
+        "WHERE z.registrationid = $1";
+
+      const ledgerRes = await postgreConnection.selectWithValues(squery, [
+        userid,
+      ]);
+
+      for (let i = 0; i < ledgerRes.length; i++) {
+        const ledger = ledgerRes[i];
+        squery =
+          "SELECT cityid, stateid FROM tbl_citymaster WHERE cityname = $1 AND brandid = $2";
+        const cityStateRes = await postgreConnection.selectWithValues(squery, [
+          cityname,
+          ledger.brandid,
+        ]);
+
+        let cityid = 0,
+          stateid = 0;
+        if (cityStateRes.length > 0) {
+          cityid = cityStateRes[0].cityid;
+          stateid = cityStateRes[0].stateid;
+        }
+
+        squery =
+          "UPDATE tbl_ledgermaster SET alteredon = CURRENT_TIMESTAMP, isdmsupdate = true, " +
+          "dateofbirth = $1, cityid = $2, stateid = $3, dateofanniversary = $4 " +
+          "WHERE ledgerid = $5";
+        await postgreConnection.selectWithValues(squery, [
+          objupdateprofile.dateofbirth || null,
+          cityid,
+          stateid,
+          objupdateprofile.dateofanniversary || null,
+          ledger.ledgerid,
+        ]);
+      }
+
+      return true;
+    } catch (error) {
+      console.log();
+      "UpdateDOB_DOA error:", error;
+      return false;
+    }
+  }
+
+  static async changePasswordRequest(objChangePassword, UserId) {
+    try {
+      objChangePassword.oldpassword = objChangePassword.oldpassword || "";
+      objChangePassword.newpassword = objChangePassword.newpassword || "";
+      objChangePassword.OTP = objChangePassword.OTP || "";
+
+      let squery =
+        "SELECT config_value FROM tbl_comn_communication_configuration WHERE LOWER(config_type) = LOWER('ChangePasswordExpireTime') AND isactive = TRUE";
+      const configRes = await postgreConnection.query(squery);
+
+      if (configRes.length === 1) {
+        const expireTime = parseInt(configRes[0].config_value);
+
+        const passwordRes = await postgreConnection.selectWithValues(
+          "SELECT loginuserpassword FROM tbl_registration WHERE registrationid = $1",
+          [UserId]
+        );
+        if (
+          passwordRes.length === 0 ||
+          passwordRes[0].loginuserpassword !== objChangePassword.oldpassword
+        ) {
+          return {
+            GetStatus: false,
+            GetMessage: "Old Password Not Match!!!!.",
+          };
+        }
+
+        squery =
+          "SELECT (EXTRACT(EPOCH FROM age(now(),createdon))/60) AS totalminute, otp_code " +
+          "FROM tbl_userotp WHERE isused = FALSE AND isexpired = FALSE AND otp_type = 2 AND userid = $1";
+        const otpRes = await postgreConnection.selectWithValues(squery, [
+          UserId,
+        ]);
+
+        if (
+          otpRes.length === 1 &&
+          otpRes[0].otp_code === objChangePassword.OTP
+        ) {
+          const totalMinute = parseInt(otpRes[0].totalminute);
+
+          if (totalMinute <= expireTime && totalMinute >= 0) {
+            await postgreConnection.updateWithValues(
+              "UPDATE tbl_registration SET loginuserpassword = $1 WHERE registrationid = $2",
+              [objChangePassword.newpassword, UserId]
+            );
+            await postgreConnection.updateWithValues(
+              "UPDATE tbl_userotp SET isused = TRUE, devicetype = $1 WHERE isused = FALSE AND isexpired = FALSE AND userid = $2",
+              [objChangePassword.Devicetype, UserId]
+            );
+
+            return {
+              GetStatus: true,
+              GetMessage: "Password change successfully.",
+            };
+          } else {
+            return { GetStatus: false, GetMessage: "OTP is expired!!!!." };
+          }
+        } else {
+          return { GetStatus: false, GetMessage: "Please enter valid OTP!!." };
+        }
+      }
+
+      return {
+        GetStatus: false,
+        GetMessage: "Configuration error or missing data.",
+      };
+    } catch (ex) {
+      console.log("ChangePasswordRequest error:", ex);
+      return { GetStatus: false, GetMessage: ex.message };
+    }
+  }
+
+  static async UpdateKYC(objupdatekyc, UserId) {
+    try {
+      let squery = "";
+      let objResponse = {};
+
+      const DtCheck = await postgreConnection.query(
+        `Select * from tbl_registration_kycdetail Where registrationid=${UserId}`
+      );
+
+      if (DtCheck.length === 0) {
+        squery = `Insert into tbl_registration_kycdetail (registrationid,gstnno,panno,paytmmobileno,upi_id,licenceno,adharcardno,votercardno,devicetype) values (${UserId},'${objupdatekyc.gstnno}','${objupdatekyc.panno}','${objupdatekyc.paytmmobileno}','${objupdatekyc.upi_id}','${objupdatekyc.licenceno}','${objupdatekyc.adharcardno}','${objupdatekyc.votercardno}',${objupdatekyc.Devicetype}) Returning registrationkycid `;
+        writeLog(`UpdateKYC Query ${squery}`);
+        objResponse.GetStaus = await postgreConnection.query(squery, "insert");
+        await postgreConnection.query(
+          `update tbl_registration Set alteredon=CURRENT_TIMESTAMP WHERE registrationid=${UserId}`,
+          "update"
+        );
+      } else {
+        squery = `UPDATE tbl_registration_kycdetail SET gstnno = '${objupdatekyc.gstnno}',panno='${objupdatekyc.panno}',paytmmobileno ='${objupdatekyc.paytmmobileno}',upi_id ='${objupdatekyc.upi_id}',licenceno ='${objupdatekyc.licenceno}',adharcardno ='${objupdatekyc.adharcardno}',votercardno ='${objupdatekyc.votercardno}',alteredon=now(),devicetype =${objupdatekyc.Devicetype} WHERE registrationid=${UserId} Returning registrationkycid `;
+        writeLog(`Profile Update Query ${squery}`);
+        objResponse.GetStaus = await postgreConnection.query(squery, "update");
+        await postgreConnection.query(
+          `update tbl_registration Set alteredon=CURRENT_TIMESTAMP WHERE registrationid=${UserId}`,
+          "update"
+        );
+      }
+
+      if (objResponse.GetStaus === true) {
+        objResponse.GetMessage = "KYC Update successfully.";
+      }
+
+      return objResponse;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  static async getGlobalSetting(type) {
+    try {
+      writeLog("---Get all Global Setting-- Stat- ");
+      const squery =
+        "Select globsettingid, itemkeyname, displayname, value from tbl_globalsettings order by 1;";
+      writeLog(`---Get all Global Setting-- - ${squery}`);
+
+      // postgreConnection = GetConnectionObj(type);
+
+      const dt = await postgreConnection.query(squery);
+
+      // console.log(">>>>>>>>>>>>>>",dt);
+      writeLog(`---Get all Global Setting-- Cout -  ${dt.length}`);
+      writeLog("---Get all Global Setting-- End ");
+
+      return dt;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 }
 
