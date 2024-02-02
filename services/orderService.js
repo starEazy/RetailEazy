@@ -7,36 +7,39 @@ const { writeLog } = require("../apps/helpers/utils");
 
 module.exports = class OrderService {
   static async ItemStockPost(obj, userid) {
+    const response = {
+      item: null,
+      status: false,
+      message: "",
+    };
     try {
-      writeLog("Start Item Stock API With Json " + JSON.stringify(obj));
-      const response = {
-        item: null,
-        status: false,
-        message: "",
-      };
+      writeLog(`Start Item Stock API With Json  + ${JSON.stringify(obj)}`);
       const masterInsertQuery = `
             INSERT INTO tbl_itemstockmaster(brandid, createdby, synchedon, createdonapp, devicetype)
-            VALUES($1, $2, NOW(), $3, $4)
+            VALUES($1, $2, $3, $4, $5)
             RETURNING masterid`;
 
       const masterParams = [
         obj.brandid,
         userid,
+        "NOW()",
         moment(obj.synchedon).format("YYYY-MM-DD HH:mm:ss"),
         obj.Devicetype,
       ];
 
-      const { masterid } = await postgreConnection.updateWithValues(
+      const result = await postgreConnection.updateWithValues(
         masterInsertQuery,
         masterParams
       );
 
+      let { masterid } = result[0][0];
+
       if (masterid > 0) {
         for (const itemlist of obj.itemdetail) {
           const detailInsertQuery = `
-                INSERT INTO tbl_itemstockdetail(masterid, itemid, baseunit, altunit, itemavailable, selectedunitid, divisionid)
-                VALUES($1, $2, $3, $4, $5, $6, $7)
-                RETURNING detailid`;
+          INSERT INTO tbl_itemstockdetail(masterid, itemid, baseunit, altunit, itemavailable, selectedunitid, divisionid)
+          VALUES($1, $2, $3, $4, $5, $6, $7)
+          RETURNING detailid`;
 
           const detailParams = [
             masterid,
@@ -45,12 +48,13 @@ module.exports = class OrderService {
             itemlist.altunit,
             itemlist.itemavailable,
             itemlist.selectedunitid,
-            _.isNull(itemlist.divisionid)
-              ? null
-              : parseInt(itemlist.divisionid, 10),
+            itemlist.divisionid == null ? 10 : itemlist.divisionid,
           ];
 
-          await db.one(detailInsertQuery, detailParams);
+          await postgreConnection.updateWithValues(
+            detailInsertQuery,
+            detailParams
+          );
         }
       }
 

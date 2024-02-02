@@ -20,6 +20,6 @@ router.post(
   jwt_auth.authenticate,
   OrderController.GetPlacedOrder
 );
-router.post("ItemStock", jwt_auth.authenticate, OrderController.itemStock);
+router.post("/ItemStock", jwt_auth.authenticate, OrderController.itemStock);
 
 module.exports = router;

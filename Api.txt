@@ -1,13 +1,12 @@
 
   URL_SubmitOrder: '/api/Order/POST',
   URL_PostOrderList: "/api/Order/POST",
-  URL_UpdateItemStock: "/api/Order/ItemStock", >> Done >> TBT
-  URL_CreateBilling: "/api/Order/SaveBilling",
-  URL_PlaceOrderCancel: "/api/Order/PlaceOrderCancel",
-  URL_ReceivedOrderCancel: "/api/Order/ReceivedOrderCancel",
+  URL_CreateBilling: "/api/Order/SaveBilling", 
+  URL_PlaceOrderCancel: "/api/Order/PlaceOrderCancel",>> Garvish >> In Progress
+  URL_ReceivedOrderCancel: "/api/Order/ReceivedOrderCancel", >> Garvish >> In Progress
 
 
-  URL_SavePurchaseInvoice: "/api/purchaseinvoice/save", << Subham
+  URL_SavePurchaseInvoice: "/api/purchaseinvoice/save", << Subham >> In Progress
 
 
 
@@ -16,27 +15,22 @@
   URL_UpdateProfile: "/api/Authenticate/UpdateProfile", >> Subham Done >> TBT
   URL_ChangePassword: "/api/Authenticate/ChangePassword", >> Subham Done >> TBT
   URL_UpdateKYC: "/api/Authenticate/UpdateKYC", >> Subham Done >> TBT
-  URL_GlobalSetting: "/api/Authenticate/GlobalSetting", >> Subham Done >> TBT
 
 
 
-  URL_GenerateOTP: "/api/Email/OTP",
-  URL_ForgotPassword: "/api/Email/ForgetPassword",
 
 
 
-  URL_GetRedemptionType: "/api/Loyalty_Master/Getredemptiontype",
-  URL_GetVendor: "/api/Loyalty_Master/GetVender",
-  URL_GetCatalogue: "/api/Loyalty_Master/GetCatalogue",
-  URL_GetDelivery: "/api/Loyalty_Master/GetDelivery",
-  URL_GetBrandCatalogue: "/api/Loyalty_Master/GetBrandCatalogue",
-  URL_GetBrandCatalogueMaster: "/api/Loyalty_Master/GetBrandCatalogue_master",
-  URL_GetTransactionDetail: "/api/Loyalty_transaction/GetTransactionDetail",
+
+  URL_GetTransactionDetail: "/api/Loyalty_transaction/GetTransactionDetail", >> Subham In progress
   URL_Loyalty_delivery: "/api/Loyalty_delivery/POST",
   URL_Loyalty_transaction: "/api/Loyalty_transaction/POST",
 
 
 
+
+  URL_GenerateOTP: "/api/Email/OTP",
+  URL_ForgotPassword: "/api/Email/ForgetPassword",
 
   URL_UPIPayment: "/api/Payment/UPIPayment",
   URL_DashboardChart: "/api/Dashboards/Chart",
