@@ -12,6 +12,7 @@ const debug = require("debug");
 const numCPUs = os.cpus().length;
 const commonRoutes = require("./Routes/commonRoutes");
 const orderRoutes = require("./Routes/orderRoutes");
+const emailRoutes = require("./Routes/emailRoutes");
 const invoiceRoutes = require("./Routes/invoiceRoutes");
 const AuthRoutes = require("./Routes/AuthRoutes");
 const masterRoutes = require("./Routes/masterRoutes");
@@ -79,6 +80,7 @@ if (cluster.isMaster) {
   app.use("/api/Master", masterRoutes);
   app.use("/api/purchaseinvoice", invoiceRoutes);
   app.use("/api/Order", orderRoutes);
+  app.use("/api/email", emailRoutes);
 
   app.use(
     cors({

@@ -151,4 +151,54 @@ module.exports = class OrderController extends OrderService {
       );
     }
   }
+
+  static async PlaceOrderCancel(req,res) {
+    try {
+      let JsonString = req.body;
+      const { user_id } = req.user;
+      let ObjResult = await super.PlaceOrderCancel(JsonString, user_id);
+      if(ObjResult == ""){
+        return successResponse(req, res, ObjResult);
+      }else{
+        return errorResponse(req, res, ObjResult);
+      }
+    } catch (ex) {
+      return errorResponse(
+        req,
+        res,
+        "Unexpected error occurred. We are working on it.",
+        ex.message
+      );
+    }
+  }
+
+  static async ReceivedOrderCancel(req, res) {
+    try {
+      let JsonString = req.body;
+      const { user_id } = req.user;
+      let result = await ReceivedOrderCancel(JsonString, user_id);
+      if (result != ""){
+        return successResponse(req, res, result);
+      } else {
+        return errorResponse(req, res, result);
+      }
+    } catch(e){
+      return errorResponse(
+        req,
+        res,
+        "Unexpected error occurred. We are working on it.",
+        ex.message
+      );
+    }
+  }
+
+  static async POST(req,res){
+    try {
+      let {user_id} = req.user;
+      let result = await PostOrder(req.body,user_id,employeeId,username);
+      console.log(result,'.....result');
+    } catch (e) {
+      console.log(e);
+    }
+  }
 };
