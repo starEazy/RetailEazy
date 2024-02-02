@@ -16,6 +16,9 @@ const emailRoutes = require("./Routes/emailRoutes");
 const invoiceRoutes = require("./Routes/invoiceRoutes");
 const AuthRoutes = require("./Routes/AuthRoutes");
 const masterRoutes = require("./Routes/masterRoutes");
+const loyaltyMasterRoutes = require("./Routes/loyaltyMasterRoutes");
+const loyaltyTransationRoutes = require("./Routes/loyaltyTransactionRoutes");
+const loyaltyDeliveryRoutes = require("./Routes/loyaltyDeliveryRoutes");
 const compression = require("compression");
 // const db = require("./database/models/index");
 // db.sequelize.sync();
@@ -81,6 +84,9 @@ if (cluster.isMaster) {
   app.use("/api/purchaseinvoice", invoiceRoutes);
   app.use("/api/Order", orderRoutes);
   app.use("/api/email", emailRoutes);
+  app.use("/api/Loyalty_Master", loyaltyMasterRoutes);
+  app.use("/api/Loyalty_transaction", loyaltyTransationRoutes);
+  app.use("/api/Loyalty_delivery", loyaltyDeliveryRoutes);
 
   app.use(
     cors({

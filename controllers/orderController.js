@@ -132,7 +132,7 @@ module.exports = class OrderController extends OrderService {
 
   static async itemStock(req, res) {
     try {
-      const { user_id } = req.body;
+      const { user_id } = req.user;
       const ObjResult = await super.ItemStockPost(req.body, user_id);
 
       if (ObjResult.status) {
