@@ -1,7 +1,7 @@
 "use strict";
 
 const postgreConnection = require("../apps/helpers/sequelizeHelper");
-
+const axios = require("axios");
 const moment = require("moment");
 const { writeLog } = require("../apps/helpers/utils");
 
@@ -187,9 +187,178 @@ module.exports = class OrderService {
     }
   }
 
-  static async PostOrder(JsonObject,UserId,EmployeeId, UserName){
+  static async PostOrder(JsonObject,UserId){
+    writeLog('Start Post Order API ');
+    let requeststr = null;
+    let orderid = 0;
+    let orderidstr = '';
+    let result = '';
+    let WebOrderNo = '';
+    let ApiOrderNo = '';
+    let VendorId = 0;
+    let BrandId = 0;
 
-  }
+    try {
+      requeststr = JSON.stringify(JsonObject);
+      writeLog(requeststr);
+      let requestParam = JSON.parse(requeststr);
+      let objOrd = {};
+      let dtresponse = [];
+
+      for (const mstdetails of requestParam.OrderMasterList) {
+        let sQuery = `SELECT count(*) FROM tbl_ordermaster om INNER JOIN tbl_subordermaster som on om.orderid = som.orderid where apiorderno = '${mstdetails.apiorderno}' and som.partyid=${UserId} and om.brandid=${mstdetails.brandid}`;
+        let ordercount = (await postgreConnection.query(sQuery))[0].count;
+
+        sQuery = `SELECT om.orderid FROM tbl_ordermaster om INNER JOIN tbl_subordermaster som on om.orderid = som.orderid where apiorderno = '${mstdetails.apiorderno}' and som.partyid=${UserId}and om.brandid=${mstdetails.brandid}`;
+        orderid = (await postgreConnection.query(sQuery))[0].orderid;
+
+        BrandId = mstdetails.brandid;
+
+        sQuery = `SELECT apiorderno FROM tbl_ordermaster om INNER JOIN tbl_subordermaster som on om.orderid = som.orderid where apiorderno = '${mstdetails.apiorderno}' and som.partyid=${UserId}and om.brandid=${mstdetails.brandid}`;
+        WebOrderNo = (await postgreConnection.query(sQuery))[0].apiorderno;
+
+        if (ordercount === 0) {
+          sQuery = `INSERT INTO tbl_ordermaster(apiorderno,orderdate,orderedby,synchedon,remark,brandid) VALUES('${mstdetails.apiorderno}','${new Date(mstdetails.orderdate).toISOString()}','${UserId}','${new Date(mstdetails.synchedon).toISOString()}','${mstdetails.remark}',${mstdetails.brandid})  returning orderid`;
+          writeLog('Order Master Query ' + sQuery);
+
+          orderid = (await postgreConnection.query(sQuery))[0].orderid;
+          orderidstr = orderid + ',' + orderidstr;
+
+          sQuery = `Update tbl_ordermaster set orderno='RE' || lpad(cast(orderid as text),10,'0') Where orderid=${orderid} returning orderno`;
+          WebOrderNo = (await postgreConnection.query(sQuery))[0].orderno;
+
+          objOrd.Web_OrderNo = WebOrderNo;
+          objOrd.API_OrderNo = mstdetails.apiorderno;
+          objOrd.OrderDate = mstdetails.orderdate;
+
+          if (orderid > 0) {
+            let SubOrderNo = '';
+            for (const item of mstdetails.OrderItemList) {
+              let suborderid = 0;
+              VendorId = item.vendorid;
+              BrandId = item.brandid;
+              sQuery = `SELECT COALESCE(suborderid,0) as suborderid FROM tbl_subordermaster WHERE vendorid = ${item.vendorid} AND brandid = ${item.brandid} AND orderid = ${orderid}`;
+              suborderid = (await postgreConnection.query(sQuery))[0].suborderid;
+
+              if (suborderid === 0) {
+                sQuery = `INSERT INTO tbl_subordermaster(orderid,suborderno,suborderdate,vendorid,partyid,brandid,createdby,remark,longitude,latitude,devicetype) VALUES(${orderid},'${SubOrderNo}','${new Date(mstdetails.orderdate).toISOString()}','${item.vendorid}','${UserId}','${item.brandid}',${UserId},'${mstdetails.remark}',${parseFloat(mstdetails.longitude)},${parseFloat(mstdetails.latitude)},${mstdetails.Devicetype || null}) returning suborderid`;
+                writeLog('Sub Order Master Save Query ' + sQuery);
+
+                suborderid = (await postgreConnection.query(sQuery))[0].suborderid;
+
+                SubOrderNo = (await postgreConnection.query(`Update tbl_subordermaster set suborderno='RE' || lpad(cast(suborderid as text),10,'0') Where suborderid=${suborderid} returning suborderno`))[0].suborderno;
+              }
+
+              objOrd.DivisionId = item.divisionid || null;
+
+              let Rate = 0;
+              if (item.amount > 0) {
+                Rate = item.amount / item.orderqty;
+              }
+
+              sQuery = `INSERT INTO tbl_suborderdetail(subordermasterid,orderid,brandid,itemid,qty,rate,amount,orderuomid,divisionid,createdby,pendingqty) VALUES(${suborderid},${orderid},${item.brandid},${item.itemid},${item.orderqty},${Rate},${item.amount},${item.orderuomid},${item.divisionid || null},${UserId},${item.orderqty}) returning suborderdetailid`;
+              writeLog('Sub Order Detail Save Query ' + sQuery);
+
+              let suborderdetailid = (await postgreConnection.query(sQuery))[0].suborderdetailid;
+
+              sQuery = `UPDATE tbl_subordermaster SET grandtotal = (SELECT SUM(amount) FROM tbl_suborderdetail WHERE subordermasterid = ${suborderid} ) WHERE suborderid = ${suborderid}`
+              writeLog("Update grandtotal Query " + sQuery);
+              let updateorderid = await postgreConnection.query(sQuery);
+            }
+          }
+        }
+
+        const alter_on = new Date().toISOString();
+        dtresponse = {
+          order_id: orderid,
+          apiorderno: mstdetails.apiorderno,
+          weborder_no: WebOrderNo,
+          alter_on,
+          rowid: mstdetails.rowid,
+          brandid: BrandId,
+        };
+
+        result += JSON.stringify(row) + ',';
+      }
+
+      // Remove the trailing comma from the result
+      result = result.replace(/,$/, '');
+
+      await postgreConnection.query('COMMIT');
+
+      try {
+        sQuery = `SELECT fcmid, appname FROM tbl_mobilesessiondetail WHERE userid='${VendorId}' ORDER BY id DESC LIMIT 1;`;
+        let dtSendNotficn = await postgreConnection.query(sQuery);
+
+        if (dtSendNotficn.length > 0) {
+          sQuery = `SELECT brandname FROM tbl_brandmaster WHERE brandid  = '${BrandId}';`;
+          let dtBrandName = await postgreConnection.query(sQuery);
+          objOrd.BrandName = dtBrandName[0]['brandname'];
+          objOrd.BrandId = BrandId;
+          objOrd.OrderDate = objOrd.OrderDate ? new Date(objOrd.OrderDate).toISOString() : objOrd.OrderDate;
+
+          sQuery = `SELECT tl.ledgername FROM tbl_userdesignationmapping tu INNER JOIN tbl_ledgermaster tl ON tu.dmsledgercode  = tl.ledgercode AND tu.brandid ='${objOrd.BrandId}' AND tl.brandid ='${objOrd.BrandId}' and `;
+          const dtUserName = await postgreConnection.query(sQuery + `tu.userid = '${UserId}'`);
+          objOrd.UserName = dtUserName[0]['ledgername'];
+
+          const dtCustName = await postgreConnection.query(sQuery + `tu.userid = '${VendorId}'`);
+          objOrd.CustomerName = dtCustName[0]['ledgername'];
+
+          sQuery = `SELECT td.divisionid, td.divisioncode, td.divisionname FROM tbl_divisionmaster td WHERE td.brandid ='${objOrd.BrandId}' AND td.divisionid ='${objOrd.DivisionId}'`;
+          const dtdivisiondetail = await postgreConnection.query(sQuery);
+
+          if (dtdivisiondetail != 0 && dtdivisiondetail.length > 0) {
+            objOrd.DivisionId = dtdivisiondetail[0].divisionid;
+            objOrd.DivisionCode = dtdivisiondetail[0].divisioncode;
+            objOrd.DivisionName = dtdivisiondetail[0].divisionname;
+          }
+
+          sQuery = `SELECT notification_body, notification_subject FROM tbl_notification_data WHERE  notification_type ='DealerCreateOrder' AND brandid  = '${objOrd.BrandId}';`;
+          const dtNotification = (await postgreConnection.query(sQuery));
+
+          if(dtNotification.length === 0){
+            sQuery = `select notification_body,notification_subject from tbl_notification_data where  notification_type ='DealerCreateOrder' and brandid='0'`;
+            dtNotification = await postgreConnection.query(sQuery)
+          }
+
+          objOrd.Notification_Body = dtNotification[0]['notification_body']
+          objOrd.Notification_Body = objOrd.Notification_Body.replace("{#distributorname#}", objOrd.CustomerName)
+            .replace("{#dealername#}", objOrd.UserName)
+            .replace("{#APIOrderNo#}", objOrd.API_OrderNo)
+            .replace("{#OrderDate#}", objOrd.OrderDate)
+            .replace("{#BrandName#}", objOrd.BrandName)
+            .replace("{#BrandId#}", objOrd.BrandId)
+            .replace("{#DivisionName#}", objOrd.DivisionName);
+
+          objOrd.Notification_Subject = dtNotification[0].notification_subject;
+
+          writeLog(`Notification PlaceOrderCancel ${dtSendNotficn[0].fcmid} ${objOrd.Notification_Body}`);
+          // objOrd.Notification_Subject = objOrd.Notification_Subject.replace("{#CustomerName#}", objOrd.CustomerName).replace("{#username#} ", objOrd.UserName);
+          const AppName = dtSendNotficn[0].appname;
+          const json = JSON.stringify(objOrd);
+          const fcmObj = {
+            to: dtSendNotficn[0].fcmid,
+            data: { message: json, type: objOrd.Notification_Subject },
+          };
+          await OrderService.SendRequestGoogleApi(fcmObj, BrandId, AppName);
+          writeLog(JSON.stringify(fcmObj));
+        }
+      } catch (ex) {
+
+      }
+
+      result = JSON.stringify(dtresponse);
+
+    } catch (ex) {
+      // await postgreConnection.query('ROLLBACK');
+      requeststr = null;
+      throw ex;
+      writeLog('Start Post Order API catch error ' + ex.message);
+    }
+
+    return result;
+  } 
+
 
   static async PlaceOrderCancel(JsonObject, UserId){
     writeLog("Start Place Order Cancel API ");
@@ -485,39 +654,67 @@ module.exports = class OrderService {
 
   static async SendRequestGoogleApi(obj="", L_brandid = 0, appname = ""){
     let result = false;
-    let url = "";
-    let apiResponse = "";
-    let data = ""
+    let url = '';
+    let apiResponse = '';
+    let data = null;
     try {
-      console.log('some');
-      url = "https://fcm.googleapis.com/fcm/send";
+        url = 'https://fcm.googleapis.com/fcm/send';
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
 
-      const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': appname.includes('Pragati Path')
-            ? 'key=AAAAXdkdE6E:APA91bHIoq0_TJANy0H0Y0f1RC15VoBaOsLtyNoEWrB2shNhzPveK3VnoLBp0nM0yaHBgaegDVhw1ctPZsp_s6my6T-IuwyCAy5GRDyTu4y50nqpQSQ4lc7Oc7ZJCyjYYJr4GdsvLv6Z'
-            : 'key=AAAAk9p1Hog:APA91bEJig2kQmbnKPUx9DIZP5zkEd4LX4_bLa29F3uiiU1xD79rAlqr8t8sHob_vTtE6NmFCbffTnxFrn0fgh1Nb04HCBLxY1yQTx2FGRbc1XdYnEY-lt7BQQqHMEZ4PKW7IXCWdOR5',
-      };
+        let key = '';
+        writeLog("SendRequestGoogleApi " + L_brandid.toString());
+        if (appname.includes('Pragati Path')) {
+            key = 'AAAAXdkdE6E:APA91bHIoq0_TJANy0H0Y0f1RC15VoBaOsLtyNoEWrB2shNhzPveK3VnoLBp0nM0yaHBgaegDVhw1ctPZsp_s6my6T-IuwyCAy5GRDyTu4y50nqpQSQ4lc7Oc7ZJCyjYYJr4GdsvLv6Z';
+        } else {
+            key = 'AAAAk9p1Hog:APA91bEJig2kQmbnKPUx9DIZP5zkEd4LX4_bLa29F3uiiU1xD79rAlqr8t8sHob_vTtE6NmFCbffTnxFrn0fgh1Nb04HCBLxY1yQTx2FGRbc1XdYnEY-lt7BQQqHMEZ4PKW7IXCWdOR5';
+        }
 
-      if(appname.contain("Pragati Path")){
-        headers.add("Authorization", "key=AAAAXdkdE6E:APA91bHIoq0_TJANy0H0Y0f1RC15VoBaOsLtyNoEWrB2shNhzPveK3VnoLBp0nM0yaHBgaegDVhw1ctPZsp_s6my6T-IuwyCAy5GRDyTu4y50nqpQSQ4lc7Oc7ZJCyjYYJr4GdsvLv6Z")
-      } else{
-        headers.add("Authorization", "key=AAAAk9p1Hog:APA91bEJig2kQmbnKPUx9DIZP5zkEd4LX4_bLa29F3uiiU1xD79rAlqr8t8sHob_vTtE6NmFCbffTnxFrn0fgh1Nb04HCBLxY1yQTx2FGRbc1XdYnEY-lt7BQQqHMEZ4PKW7IXCWdOR5");
-      }
-      console.log(`SendRequestGoogleApi ${L_brandid}`);
+        options.headers.Authorization = `key=${key}`;
 
-      const response = await axios.post(url, obj, { headers });
+        const params = JSON.stringify(obj);
+        options.headers['Content-Length'] = Buffer.byteLength(params);
 
-      apiResponse = response.data;
-      const objRes = JSON.parse(apiResponse);
+        let ax = await axios({
+          method: method,
+          url: url,
+          data: data,
+        });
+        console.log(ax.data,'axData');
+        result = ax.data;
 
-      if (objRes.success) {
-          result = true;
-      } else {
-          result = false;
-      }
-    } catch (e) {
-      
+        // const request = https.request(url, options, response => {
+        //     let data = '';
+        //     response.on('data', chunk => {
+        //         data += chunk;
+        //     });
+        //     response.on('end', () => {
+        //         apiResponse = data;
+        //         const objRes = JSON.parse(apiResponse);
+        //         if (objRes.success) {
+        //             result = true;
+        //         } else {
+        //             result = false;
+        //         }
+        //     });
+        // });
+
+        // request.on('error', error => {
+        //     console.error('Error in sending request:', error);
+        //     result = false;
+        // });
+
+        // request.write(params);
+        // request.end();
+
+    } catch (error) {
+        console.error('Exception in sending request:', error);
+        result = false;
     }
+    return result;
   }
 };

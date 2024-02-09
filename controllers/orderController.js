@@ -195,8 +195,13 @@ module.exports = class OrderController extends OrderService {
   static async POST(req,res){
     try {
       let {user_id} = req.user;
-      let result = await PostOrder(req.body,user_id,employeeId,username);
+      let result = await super.PostOrder(req.body,user_id);
       console.log(result,'.....result');
+      if (result != ""){
+        return successResponse(req, res, result);
+      } else {
+        return errorResponse(req, res, result);
+      }
     } catch (e) {
       console.log(e);
     }

@@ -1,6 +1,6 @@
 
   URL_SubmitOrder: '/api/Order/POST',
-  URL_PostOrderList: "/api/Order/POST",
+  URL_PostOrderList: "/api/Order/POST", >> Garvish >> In Progress
   URL_CreateBilling: "/api/Order/SaveBilling", 
   URL_PlaceOrderCancel: "/api/Order/PlaceOrderCancel",>> Garvish >> In Progress
   URL_ReceivedOrderCancel: "/api/Order/ReceivedOrderCancel", >> Garvish >> In Progress
