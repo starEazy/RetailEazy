@@ -197,6 +197,7 @@ module.exports = class OrderService {
     let ApiOrderNo = '';
     let VendorId = 0;
     let BrandId = 0;
+    let sQuery = '';
 
     try {
       requeststr = JSON.stringify(JsonObject);
@@ -206,24 +207,27 @@ module.exports = class OrderService {
       let dtresponse = [];
 
       for (const mstdetails of requestParam.OrderMasterList) {
-        let sQuery = `SELECT count(*) FROM tbl_ordermaster om INNER JOIN tbl_subordermaster som on om.orderid = som.orderid where apiorderno = '${mstdetails.apiorderno}' and som.partyid=${UserId} and om.brandid=${mstdetails.brandid}`;
-        let ordercount = (await postgreConnection.query(sQuery))[0].count;
+        sQuery = `SELECT count(*) FROM tbl_ordermaster om INNER JOIN tbl_subordermaster som on om.orderid = som.orderid where apiorderno = '${mstdetails.apiorderno}' and som.partyid=${UserId} and om.brandid=${mstdetails.brandid}`;
+        let ordercount = parseInt((await postgreConnection.query(sQuery))[0].count);
+        console.log(ordercount,'....orderCount');
 
         sQuery = `SELECT om.orderid FROM tbl_ordermaster om INNER JOIN tbl_subordermaster som on om.orderid = som.orderid where apiorderno = '${mstdetails.apiorderno}' and som.partyid=${UserId}and om.brandid=${mstdetails.brandid}`;
-        orderid = (await postgreConnection.query(sQuery))[0].orderid;
+        orderid = await postgreConnection.query(sQuery);
+        // orderid = (await postgreConnection.query(sQuery))[0].orderid;
+        console.log(orderid,'ordier');
 
         BrandId = mstdetails.brandid;
 
         sQuery = `SELECT apiorderno FROM tbl_ordermaster om INNER JOIN tbl_subordermaster som on om.orderid = som.orderid where apiorderno = '${mstdetails.apiorderno}' and som.partyid=${UserId}and om.brandid=${mstdetails.brandid}`;
-        WebOrderNo = (await postgreConnection.query(sQuery))[0].apiorderno;
+        WebOrderNo = await postgreConnection.query(sQuery);
+        // WebOrderNo = (await postgreConnection.query(sQuery))[0].apiorderno;
 
         if (ordercount === 0) {
           sQuery = `INSERT INTO tbl_ordermaster(apiorderno,orderdate,orderedby,synchedon,remark,brandid) VALUES('${mstdetails.apiorderno}','${new Date(mstdetails.orderdate).toISOString()}','${UserId}','${new Date(mstdetails.synchedon).toISOString()}','${mstdetails.remark}',${mstdetails.brandid})  returning orderid`;
           writeLog('Order Master Query ' + sQuery);
 
           orderid = (await postgreConnection.query(sQuery))[0].orderid;
-          orderidstr = orderid + ',' + orderidstr;
-
+          console.log(orderid,'...orderids');
           sQuery = `Update tbl_ordermaster set orderno='RE' || lpad(cast(orderid as text),10,'0') Where orderid=${orderid} returning orderno`;
           WebOrderNo = (await postgreConnection.query(sQuery))[0].orderno;
 
@@ -238,15 +242,17 @@ module.exports = class OrderService {
               VendorId = item.vendorid;
               BrandId = item.brandid;
               sQuery = `SELECT COALESCE(suborderid,0) as suborderid FROM tbl_subordermaster WHERE vendorid = ${item.vendorid} AND brandid = ${item.brandid} AND orderid = ${orderid}`;
-              suborderid = (await postgreConnection.query(sQuery))[0].suborderid;
+              suborderid = await postgreConnection.query(sQuery);
+              // suborderid = parseInt((await postgreConnection.query(sQuery))[0].suborderid);
+              console.log(suborderid,'...suborderid');
 
               if (suborderid === 0) {
                 sQuery = `INSERT INTO tbl_subordermaster(orderid,suborderno,suborderdate,vendorid,partyid,brandid,createdby,remark,longitude,latitude,devicetype) VALUES(${orderid},'${SubOrderNo}','${new Date(mstdetails.orderdate).toISOString()}','${item.vendorid}','${UserId}','${item.brandid}',${UserId},'${mstdetails.remark}',${parseFloat(mstdetails.longitude)},${parseFloat(mstdetails.latitude)},${mstdetails.Devicetype || null}) returning suborderid`;
                 writeLog('Sub Order Master Save Query ' + sQuery);
 
-                suborderid = (await postgreConnection.query(sQuery))[0].suborderid;
+                suborderid = (await postgreConnection.query(sQuery,'update'))[0].suborderid;
 
-                SubOrderNo = (await postgreConnection.query(`Update tbl_subordermaster set suborderno='RE' || lpad(cast(suborderid as text),10,'0') Where suborderid=${suborderid} returning suborderno`))[0].suborderno;
+                SubOrderNo = (await postgreConnection.query(`Update tbl_subordermaster set suborderno='RE' || lpad(cast(suborderid as text),10,'0') Where suborderid=${suborderid} returning suborderno`,"update"))[0].suborderno;
               }
 
               objOrd.DivisionId = item.divisionid || null;
@@ -256,14 +262,14 @@ module.exports = class OrderService {
                 Rate = item.amount / item.orderqty;
               }
 
-              sQuery = `INSERT INTO tbl_suborderdetail(subordermasterid,orderid,brandid,itemid,qty,rate,amount,orderuomid,divisionid,createdby,pendingqty) VALUES(${suborderid},${orderid},${item.brandid},${item.itemid},${item.orderqty},${Rate},${item.amount},${item.orderuomid},${item.divisionid || null},${UserId},${item.orderqty}) returning suborderdetailid`;
-              writeLog('Sub Order Detail Save Query ' + sQuery);
+              // sQuery = `INSERT INTO tbl_suborderdetail(subordermasterid,orderid,brandid,itemid,qty,rate,amount,orderuomid,divisionid,createdby,pendingqty) VALUES(${suborderid},${orderid},${item.brandid},${item.itemid},${item.orderqty},${Rate},${item.amount},${item.orderuomid},${item.divisionid || null},${UserId},${item.orderqty}) returning suborderdetailid`;
+              // writeLog('Sub Order Detail Save Query ' + sQuery);
 
-              let suborderdetailid = (await postgreConnection.query(sQuery))[0].suborderdetailid;
+              // let suborderdetailid = (await postgreConnection.query(sQuery,"insert"))[0].suborderdetailid;
 
-              sQuery = `UPDATE tbl_subordermaster SET grandtotal = (SELECT SUM(amount) FROM tbl_suborderdetail WHERE subordermasterid = ${suborderid} ) WHERE suborderid = ${suborderid}`
-              writeLog("Update grandtotal Query " + sQuery);
-              let updateorderid = await postgreConnection.query(sQuery);
+              // sQuery = `UPDATE tbl_subordermaster SET grandtotal = (SELECT SUM(amount) FROM tbl_suborderdetail WHERE subordermasterid = ${suborderid} ) WHERE suborderid = ${suborderid}`
+              // writeLog("Update grandtotal Query " + sQuery);
+              // let updateorderid = await postgreConnection.query(sQuery,"update");
             }
           }
         }
@@ -278,14 +284,9 @@ module.exports = class OrderService {
           brandid: BrandId,
         };
 
-        result += JSON.stringify(row) + ',';
       }
 
-      // Remove the trailing comma from the result
-      result = result.replace(/,$/, '');
-
-      await postgreConnection.query('COMMIT');
-
+      
       try {
         sQuery = `SELECT fcmid, appname FROM tbl_mobilesessiondetail WHERE userid='${VendorId}' ORDER BY id DESC LIMIT 1;`;
         let dtSendNotficn = await postgreConnection.query(sQuery);
@@ -297,12 +298,14 @@ module.exports = class OrderService {
           objOrd.BrandId = BrandId;
           objOrd.OrderDate = objOrd.OrderDate ? new Date(objOrd.OrderDate).toISOString() : objOrd.OrderDate;
 
-          sQuery = `SELECT tl.ledgername FROM tbl_userdesignationmapping tu INNER JOIN tbl_ledgermaster tl ON tu.dmsledgercode  = tl.ledgercode AND tu.brandid ='${objOrd.BrandId}' AND tl.brandid ='${objOrd.BrandId}' and `;
-          const dtUserName = await postgreConnection.query(sQuery + `tu.userid = '${UserId}'`);
-          objOrd.UserName = dtUserName[0]['ledgername'];
+          sQuery = `SELECT tl.ledgername FROM tbl_userdesignationmapping tu INNER JOIN tbl_ledgermaster tl ON tu.dmsledgercode  = tl.ledgercode AND tu.brandid ='${objOrd.BrandId}' AND tl.brandid ='${objOrd.BrandId}'`;
+          const dtUserName = await postgreConnection.query(sQuery + `and tu.userid = '${UserId}'`);
+          console.log(dtUserName,'....dtUserName');
+          // objOrd.UserName = dtUserName[0]['ledgername'];
 
-          const dtCustName = await postgreConnection.query(sQuery + `tu.userid = '${VendorId}'`);
-          objOrd.CustomerName = dtCustName[0]['ledgername'];
+          const dtCustName = await postgreConnection.query(sQuery + `and tu.userid = '${VendorId}'`);
+          console.log(dtCustName,'...dtCustName');
+          // objOrd.CustomerName = dtCustName[0]['ledgername'];
 
           sQuery = `SELECT td.divisionid, td.divisioncode, td.divisionname FROM tbl_divisionmaster td WHERE td.brandid ='${objOrd.BrandId}' AND td.divisionid ='${objOrd.DivisionId}'`;
           const dtdivisiondetail = await postgreConnection.query(sQuery);
@@ -314,7 +317,8 @@ module.exports = class OrderService {
           }
 
           sQuery = `SELECT notification_body, notification_subject FROM tbl_notification_data WHERE  notification_type ='DealerCreateOrder' AND brandid  = '${objOrd.BrandId}';`;
-          const dtNotification = (await postgreConnection.query(sQuery));
+          const dtNotification = await postgreConnection.query(sQuery);
+          console.log(dtNotification,'...dtNotification');
 
           if(dtNotification.length === 0){
             sQuery = `select notification_body,notification_subject from tbl_notification_data where  notification_type ='DealerCreateOrder' and brandid='0'`;
@@ -340,7 +344,8 @@ module.exports = class OrderService {
             to: dtSendNotficn[0].fcmid,
             data: { message: json, type: objOrd.Notification_Subject },
           };
-          await OrderService.SendRequestGoogleApi(fcmObj, BrandId, AppName);
+          console.log(fcmObj,'...fcmObj');
+          // await OrderService.SendRequestGoogleApi(fcmObj, BrandId, AppName);
           writeLog(JSON.stringify(fcmObj));
         }
       } catch (ex) {
@@ -476,8 +481,6 @@ module.exports = class OrderService {
           .replace("{#BrandName#}", objOrd.BrandName)
           .replace("{#BrandId#}", objOrd.BrandId)
           .replace("{#DivisionName#}", objOrd.DivisionName);
-        
-        console.log(objOrd,'....objORd6');
         writeLog("Notification PlaceOrderCancel " + dtSendNotficn[0]["fcmid"] + " " + objOrd.Notification_Body);
         let AppName = dtSendNotficn[0]["appname"];
         console.log(AppName,'AppName');

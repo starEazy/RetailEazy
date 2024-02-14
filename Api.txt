@@ -1,9 +1,9 @@
 
   URL_SubmitOrder: '/api/Order/POST',
-  URL_PostOrderList: "/api/Order/POST", >> Garvish >> In Progress
+  URL_PostOrderList: "/api/Order/POST", >> Garvish >> Done
   URL_CreateBilling: "/api/Order/SaveBilling", 
-  URL_PlaceOrderCancel: "/api/Order/PlaceOrderCancel",>> Garvish >> In Progress
-  URL_ReceivedOrderCancel: "/api/Order/ReceivedOrderCancel", >> Garvish >> In Progress
+  URL_PlaceOrderCancel: "/api/Order/PlaceOrderCancel",>> Garvish >> Done
+  URL_ReceivedOrderCancel: "/api/Order/ReceivedOrderCancel", >> Garvish >> Done
 
 
   URL_SavePurchaseInvoice: "/api/purchaseinvoice/save", << Subham >> In Progress
@@ -29,8 +29,8 @@
 
 
 
-  URL_GenerateOTP: "/api/Email/OTP",
-  URL_ForgotPassword: "/api/Email/ForgetPassword",
+  URL_GenerateOTP: "/api/Email/OTP",>> Garvish >> Done
+  URL_ForgotPassword: "/api/Email/ForgetPassword",>> Garvish >> Done
 
   URL_UPIPayment: "/api/Payment/UPIPayment",
   URL_DashboardChart: "/api/Dashboards/Chart",

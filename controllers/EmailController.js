@@ -23,7 +23,6 @@ module.exports = class EmailController extends EmailService {
 
   static async POST(req,res){
     try {
-        console.log(req.body);
         let model = req.body;
         writeLog(`api/Email/OTP Inputs ${model}`);
         let result = await super.EmailRequest(model);
@@ -41,6 +40,27 @@ module.exports = class EmailController extends EmailService {
             "Unexpected error occured , We are working on it",
             e.toString()
         );
+    }
+  }
+
+  static async ForgetPassword(req,res){
+    try {
+      let model = req.body;
+      let result = await super.ForgetPasswordRequest(model);
+      console.log(result,'....result');
+      if (result.getStatus)
+      {                  
+          return Ok(Response.Success(result.getMessage));
+      }
+      else
+          return Ok(Response.Error(result.getMessage));
+    } catch (e) {
+      return errorResponse(
+        req,
+        res,
+        "Unexpected error occured , We are working on it",
+        e.toString()
+      );
     }
   }
 }
