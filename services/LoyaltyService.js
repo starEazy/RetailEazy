@@ -1,7 +1,7 @@
 'use strict'
 
 const postgreConnection = require('../apps/helpers/sequelizeHelper')
-const { writeLog } = require('../apps/helpers/utils')
+const { writeLog, IsNull } = require('../apps/helpers/utils')
 
 class LoyaltyService {
   static async Loyalty_MasterData(objval, masterName, user_id) {
@@ -83,18 +83,16 @@ class LoyaltyService {
 
         let sQuery = `
                 INSERT INTO loyalty_transaction_master(userid, userloggedinbrandid, totalredeemedpoints, deliveryid, deliveryremarks, redemptiontypeid, totalpurchasedqty, isactive, createdon, createdby)
-                VALUES(${user_id}, ${
-          transmaster.userloggedinbrandid
-        }, ${Configure.IsNull(
+                VALUES(${user_id}, ${transmaster.userloggedinbrandid}, ${IsNull(
           transmaster.totalredeemedpoints,
-          VarType.Integer,
+          'Integer',
         )}, ${transmaster.deliveryid}, '${transmaster.deliveryremarks}',
-                ${transmaster.redemptiontypeid}, ${Configure.IsNull(
+                ${transmaster.redemptiontypeid}, ${IsNull(
           transmaster.totalpurchasedqty,
-          VarType.Dec,
-        )}, ${Configure.IsNull(
+          'Dec',
+        )}, ${IsNull(
           transmaster.isactive,
-          VarType.Bool,
+          'Bool',
         )}, NOW(), ${user_id}) RETURNING transactionid
             `
         writeLog(`Transaction Master Query ${sQuery}`)
@@ -120,37 +118,32 @@ class LoyaltyService {
                         INSERT INTO loyalty_transaction_detail(transactionid, catalogueid, cataloguecode, cataloguemrp, brandcatalogueid, redumptionpointperqty, mrp, deliverydays, deliverycharges, expirydate, vendorid, brandid, quantity, totalredeemedpoints, totalredeemedamount)
                         VALUES(${transmaster.transactionid}, ${
               transdetail.catalogueid
-            }, '${Configure.IsNull(
-              transdetail.cataloguecode,
-              VarType.Text,
-            )}', ${Configure.IsNull(transdetail.cataloguemrp, VarType.Dec)}, ${
-              transdetail.brandcatalogueid
-            },
-                        ${Configure.IsNull(
+            }, '${IsNull(transdetail.cataloguecode, 'Text')}', ${IsNull(
+              transdetail.cataloguemrp,
+              'Dec',
+            )}, ${transdetail.brandcatalogueid},
+                        ${IsNull(
                           transdetail.redumptionpointperqty,
-                          VarType.Dec,
-                        )}, ${Configure.IsNull(
-              transdetail.mrp,
-              VarType.Dec,
-            )}, ${Configure.IsNull(
+                          'Dec',
+                        )}, ${IsNull(transdetail.mrp, 'Dec')}, ${IsNull(
               transdetail.deliverydays,
-              VarType.Dec,
-            )}, ${Configure.IsNull(transdetail.deliverycharges, VarType.Dec)},
+              'Dec',
+            )}, ${IsNull(transdetail.deliverycharges, 'Dec')},
                         '${new Date(
                           transdetail.expirydate,
-                        ).toISOString()}', ${Configure.IsNull(
+                        ).toISOString()}', ${IsNull(
               transdetail.vendorid,
-              VarType.Integer32,
-            )}, ${Configure.IsNull(
-              transdetail.brandid,
-              VarType.Integer32,
-            )}, ${Configure.IsNull(transdetail.quantity, VarType.Dec)},
-                        ${Configure.IsNull(
+              'Integer32',
+            )}, ${IsNull(transdetail.brandid, 'Integer32')}, ${IsNull(
+              transdetail.quantity,
+              'Dec',
+            )},
+                        ${IsNull(
                           transdetail.totalredeemedpoints,
-                          VarType.Integer32,
-                        )}, ${Configure.IsNull(
+                          'Integer32',
+                        )}, ${IsNull(
               transdetail.totalredeemedamount,
-              VarType.Dec,
+              'Dec',
             )}) RETURNING transactiondetailid
                     `
             writeLog(`Transaction Details Query ${sQuery}`)

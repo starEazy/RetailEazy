@@ -1,58 +1,58 @@
-"use strict";
-const { log } = require("winston");
-const db = require("../../database/models/index.js");
-const sequelize = require("sequelize");
+'use strict'
+const { log } = require('winston')
+const db = require('../../database/models/index.js')
+const sequelize = require('sequelize')
 const postgreConnection = {
   query: async (query, types) => {
     if (types) {
-      let result;
+      let result
       switch (types) {
-        case "select":
+        case 'select':
           result = await db.sequelize.query(query, {
             type: sequelize.QueryTypes.SELECT,
-          });
-          return result;
-        case "insert":
+          })
+          return result
+        case 'insert':
           result = await db.sequelize.query(query, {
             type: sequelize.QueryTypes.INSERT,
-          });
-          return result;
-        case "update":
+          })
+          return result
+        case 'update':
           result = await db.sequelize.query(query, {
             type: sequelize.QueryTypes.UPDATE,
-          });
-          return result;
+          })
+          return result
       }
     } else {
       let result = await db.sequelize.query(query, {
         type: sequelize.QueryTypes.SELECT,
-      });
-      return result;
+      })
+      return result
     }
   },
-  getSingleData: async (query) => {
+  getSingleData: async query => {
     let result = await db.sequelize.query(query, {
       type: sequelize.QueryTypes.SELECT,
-    });
-    return result[0];
+    })
+    return result[0]
   },
   updateWithValues: async (query, values) => {
     let result = await db.sequelize.query(query, {
       bind: values,
       type: sequelize.QueryTypes.INSERT,
-    });
-    return result;
+    })
+    return result
   },
   selectWithValues: async (query, values) => {
     let result = await db.sequelize.query(query, {
       bind: values,
       type: sequelize.QueryTypes.SELECT,
-    });
-    return result;
+    })
+    return result
   },
 
   insertNewToken: async (UserCredential, UserId, Token) => {
-    let isInserted = false;
+    let isInserted = false
     const values = [
       UserCredential.FcmDeviceid,
       true,
@@ -62,25 +62,31 @@ const postgreConnection = {
       UserCredential.DeviceInfo,
       UserCredential.VersionCode,
       UserCredential.VersionName,
-      Token,
+      '',
       UserCredential.EazyErpAppVersion,
       UserCredential.Username,
       UserCredential.loginappname,
-    ];
+      Token,
+    ]
     const sQuery = `
-      INSERT INTO tbl_mobilesessiondetail(fcmid, isactiveuser, userid, imeinumber, devicetype, deviceinfo, versioncode, versionname, token, appversion, expiry_date, username, appname)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, now(), $11, $12)
-    `;
+      INSERT INTO tbl_mobilesessiondetail(fcmid, isactiveuser, userid, imeinumber, devicetype, deviceinfo, versioncode,
+      versionname, token, appversion, expiry_date, username, appname , nvtoken)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, now(), $11, $12, $13)
+    `
 
     let result = await db.sequelize.query(sQuery, {
       bind: values,
       type: sequelize.QueryTypes.INSERT,
-    });
+    })
 
-    isInserted = result.rowCount > 0;
+    console.log(result)
 
-    return isInserted;
+    isInserted = result[1] > 0
+
+    console.log('isInserted', isInserted)
+
+    return isInserted
   },
-};
+}
 
-module.exports = postgreConnection;
+module.exports = postgreConnection
