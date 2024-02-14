@@ -23,8 +23,8 @@
 
 
   URL_GetTransactionDetail: "/api/Loyalty_transaction/GetTransactionDetail", >> Subham In progress
-  URL_Loyalty_delivery: "/api/Loyalty_delivery/POST",
-  URL_Loyalty_transaction: "/api/Loyalty_transaction/POST",
+  URL_Loyalty_delivery: "/api/Loyalty_delivery/POST", >>> Subham in progress
+  URL_Loyalty_transaction: "/api/Loyalty_transaction/POST", >>> Subham In progress
 
 
 
@@ -33,11 +33,11 @@
   URL_ForgotPassword: "/api/Email/ForgetPassword",>> Garvish >> Done
 
   URL_UPIPayment: "/api/Payment/UPIPayment",
-  URL_DashboardChart: "/api/Dashboards/Chart",
+  URL_DashboardChart: "/api/Dashboards/Chart", >>> Subham Done TBT
   URL_ImageUpload: "/api/Upload/Image",
-  URL_ManualErrorLog: "/api/manualerrorlogsync/save",
-  URL_AutomaticErrorLog: "/api/automaticerrorlogsync/save",
-  URL_UserApiLogDetail: "/api/UserApiLogDetail"
+  URL_ManualErrorLog: "/api/manualerrorlogsync/save", >>> Subham Done TBT
+  URL_AutomaticErrorLog: "/api/automaticerrorlogsync/save", >>> Subham Done TBT
+  URL_UserApiLogDetail: "/api/UserApiLogDetail" >>> Subham Done TBT
   URL_BulkFileUploadToAzureF: "https://image.eazydms.in/api/BulkFileUploadToAzure",
   URL_AzuzeLogin:"https://image.eazydms.in/api/Login",
 

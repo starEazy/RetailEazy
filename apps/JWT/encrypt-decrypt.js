@@ -74,9 +74,12 @@ function stringEncrypt(
 }
 
 function  getHash(plainText) {
+  console.log("plainText>>>>>>" , plainText);
   try {
     const hashEngine = crypto.createHash("md5");
+    console.log("hashEngine>>>>" , hashEngine);
     const hashBytes = hashEngine.update(plainText, "utf-8").digest("hex");
+    console.log('hashBytes>>>>' , hashBytes);
     return hashBytes;
   } catch (error) {
     return "";
@@ -95,12 +98,13 @@ function stringDecrypt(
     }
 
     // Assuming 'EncryptionKey' and 'GetHash' functions need to be defined or replaced as per your application's context
-    prm_key = EncryptionKey; // Replace with your key
+    prm_key = '3s'; // Replace with your key
     const keyBytes = crypto
       .createHash("sha256")
       .update(getHash(prm_key))
       .digest();
 
+      console.log("keyBytes>>>" , keyBytes);
     // Set up the IV
     let IV;
     if (prm_IV === null) {
@@ -112,19 +116,24 @@ function stringDecrypt(
     }
 
     const decipher = crypto.createDecipheriv("aes-256-cbc", keyBytes, IV);
+    console.log('>>>>' , decipher);
     if (b64Mode) {
       decipher.setAutoPadding(false);
     }
 
     let decrypted = decipher.update(encrypted, "base64", "utf8");
+    console.log('>>>' , decrypted) ;
     decrypted += decipher.final("utf8");
 
     let str1 = decrypted.replace(/\0/g, "");
+    
     str1 = str1.replace(/a\.m\./g, "AM");
     str1 = str1.replace(/p\.m\./g, "PM");
+    console.log('>>>>>>>>>>',str1);
 
     return str1;
   } catch (ex) {
+    console.log('>>>>',ex);
     return ex.message;
   }
 }
