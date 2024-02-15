@@ -11,14 +11,17 @@ const bodyparser = require("body-parser");
 const debug = require("debug");
 const numCPUs = os.cpus().length;
 const commonRoutes = require("./Routes/commonRoutes");
+const orderRoutes = require("./Routes/orderRoutes");
+const emailRoutes = require("./Routes/emailRoutes");
+const invoiceRoutes = require("./Routes/invoiceRoutes");
 const AuthRoutes = require("./Routes/AuthRoutes");
 const masterRoutes = require("./Routes/masterRoutes");
-const { notFoundResponse } = require("./apps/helpers/customResponseTemplate");
+const loyaltyMasterRoutes = require("./Routes/loyaltyMasterRoutes");
+const loyaltyTransationRoutes = require("./Routes/loyaltyTransactionRoutes");
+const loyaltyDeliveryRoutes = require("./Routes/loyaltyDeliveryRoutes");
+const compression = require("compression");
 // const db = require("./database/models/index");
 // db.sequelize.sync();
-
-console.log("numCPUs>>>>>>>>>", numCPUs);
-console.log("cluster>>>>>>>>", cluster.isMaster);
 
 if (cluster.isMaster) {
   // Fork workers
@@ -62,10 +65,28 @@ if (cluster.isMaster) {
   // app.use((req, res) => {
   //   return notFoundResponse(req, res, "URL Not found");
   // });
+  const shouldCompress = (req, res) => {
+    if (req.headers["x-no-compression"]) {
+      return false;
+    }
+    return compression.filter(req, res);
+  };
 
+  app.use(
+    compression({
+      filter: shouldCompress,
+      threshold: 9,
+    })
+  );
   app.use("/api", commonRoutes);
   app.use("/api/Authenticate", AuthRoutes);
   app.use("/api/Master", masterRoutes);
+  app.use("/api/purchaseinvoice", invoiceRoutes);
+  app.use("/api/Order", orderRoutes);
+  app.use("/api/email", emailRoutes);
+  app.use("/api/Loyalty_Master", loyaltyMasterRoutes);
+  app.use("/api/Loyalty_transaction", loyaltyTransationRoutes);
+  app.use("/api/Loyalty_delivery", loyaltyDeliveryRoutes);
 
   app.use(
     cors({
