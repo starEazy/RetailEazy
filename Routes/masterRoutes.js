@@ -7,99 +7,99 @@ const jwt_auth = require("../apps/JWT/jwt_auth");
 
 const router = express.Router();
 
-router.post("/GetBrand", jwt_auth.authenticate, MasterController.GetBrand);
+router.post("/GetBrand_nv1", jwt_auth.authenticate, MasterController.GetBrand);
 router.post(
-  "/Distributor",
+  "/Distributor_nv1",
   jwt_auth.authenticate,
   MasterController.Distributor
 );
-router.post("/GetDealer", jwt_auth.authenticate, MasterController.GetDealer);
-router.post("/Item", jwt_auth.authenticate, MasterController.Item);
+router.post("/GetDealer_nv1", jwt_auth.authenticate, MasterController.GetDealer);
+router.post("/Item_nv1", jwt_auth.authenticate, MasterController.Item);
 router.post(
-  "/ITEMGROUPMASTER",
+  "/ITEMGROUPMASTER_nv1",
   jwt_auth.authenticate,
   MasterController.ITEMGROUPMASTER
 );
-router.post("/Unit", jwt_auth.authenticate, MasterController.Unit);
-router.post("/Division", jwt_auth.authenticate, MasterController.Division);
+router.post("/Unit_nv1", jwt_auth.authenticate, MasterController.Unit);
+router.post("/Division_nv1", jwt_auth.authenticate, MasterController.Division);
 router.post(
-  "/UserDivisionMapping",
+  "/UserDivisionMapping_nv1",
   jwt_auth.authenticate,
   MasterController.UserDivisionMapping
 );
-router.post("/GetCity", jwt_auth.authenticate, MasterController.GetCity);
-router.post("/GetState", jwt_auth.authenticate, MasterController.GetState);
-router.post("/GetCountry", jwt_auth.authenticate, MasterController.GetCountry);
+router.post("/GetCity_nv1", jwt_auth.authenticate, MasterController.GetCity);
+router.post("/GetState_nv1", jwt_auth.authenticate, MasterController.GetState);
+router.post("/GetCountry_nv1", jwt_auth.authenticate, MasterController.GetCountry);
 router.post(
-  "/GetDesignation",
+  "/GetDesignation_nv1",
   jwt_auth.authenticate,
   MasterController.GetDesignation
 );
 router.post(
-  "/DistributorDivisionTagging",
+  "/DistributorDivisionTagging_nv1",
   jwt_auth.authenticate,
   MasterController.DistributorDivisionTagging
 );
 router.post(
-  "/PrimaryCategory",
+  "/PrimaryCategory_nv1",
   jwt_auth.authenticate,
   MasterController.PrimaryCategory
 );
 router.post(
-  "/SecondaryCategory",
+  "/SecondaryCategory_nv1",
   jwt_auth.authenticate,
   MasterController.SecondaryCategory
 );
 router.post(
-  "/DSDLRCONTACTDETAIL",
+  "/DSDLRCONTACTDETAIL_nv1",
   jwt_auth.authenticate,
   MasterController.DSDLRCONTACTDETAIL
 );
 router.post(
-  "/NotificationData",
+  "/NotificationData_nv1",
   jwt_auth.authenticate,
   MasterController.NotificationData
 );
 router.post(
-  "/GetHsnMaster",
+  "/GetHsnMaster_nv1",
   jwt_auth.authenticate,
   MasterController.GetHsnMaster
 );
 router.post(
-  "/DSDLRCONTACTDETAIL",
+  "/DSDLRCONTACTDETAIL_nv1",
   jwt_auth.authenticate,
   MasterController.DSDLRCONTACTDETAIL
 );
 router.post(
-  "/AdvertisementData",
+  "/AdvertisementData_nv1",
   jwt_auth.authenticate,
   MasterController.AdvertisementData
 );
-router.post("/LoginType", jwt_auth.authenticate, MasterController.LoginType);
+router.post("/LoginType_nv1", jwt_auth.authenticate, MasterController.LoginType);
 router.post(
-  "/SaveCustomerMaster",
+  "/SaveCustomerMaster_nv1",
   jwt_auth.authenticate,
   MasterController.SaveCustomerMaster
 );
 router.post(
-  "/DmsSyncStatus",
+  "/DmsSyncStatus_nv1",
   jwt_auth.authenticate,
   MasterController.dmsSyncStatus
 );
 router.post(
-  "/DMSGetPurchaseInvoice",
+  "/DMSGetPurchaseInvoice_nv1",
   jwt_auth.checkDmsToken,
   // jwt_auth.authenticate,
   MasterController.DMSGetPurchaseInvoice
 );
 router.post(
-  "/DMSGetOrder",
+  "/DMSGetOrder_nv1",
   jwt_auth.checkDmsToken,
   jwt_auth.authenticate,
   DMSMasterController.DMSGetOrder
 );
 router.post(
-  "/DMSGetDistributorOrder",
+  "/DMSGetDistributorOrder_nv1",
   jwt_auth.checkDmsToken,
   jwt_auth.authenticate,
   DMSMasterController.DMSGetDistributorOrder
