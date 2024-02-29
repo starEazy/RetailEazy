@@ -24,5 +24,6 @@ router.post("ItemStock", jwt_auth.authenticate, OrderController.itemStock);
 router.post("/PlaceOrderCancel", jwt_auth.authenticate, OrderController.PlaceOrderCancel);
 router.post("/ReceivedOrderCancel", jwt_auth.authenticate, OrderController.ReceivedOrderCancel);
 router.post("/POST", jwt_auth.authenticate, OrderController.POST);
+router.post("/SaveBilling", jwt_auth.authenticate, OrderController.SaveBilling);
 
 module.exports = router;

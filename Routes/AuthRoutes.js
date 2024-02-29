@@ -12,5 +12,6 @@ router.post("/UpdateProfile", AuthController.UpdateProfile);
 router.post("/ChangePassword", AuthController.changePassword);
 router.post("/UpdateKYC", AuthController.UpdateKYC);
 router.get("/GlobalSetting/:type?", AuthController.GlobalSetting);
+router.post("/CustomerAuthOTP", AuthController.CustomerAuthOTP);
 
 module.exports = router;

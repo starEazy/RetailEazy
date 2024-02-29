@@ -224,6 +224,40 @@ class AuthController extends AuthService {
       )
     }
   }
+
+  static async CustomerAuthOTP(){
+    try {
+      const { error } = joiSchema.CustomerAuthSchema.validate(
+        req.body,
+        joiOptions,
+      )
+      if (error) {
+        return errorResponse(
+          req,
+          res,
+          'fields missing or invalid',
+          error.message,
+        )
+      } else {
+        // Write logs
+        writeLog(`Auth Inputs ${JSON.stringify(Cred)}`);
+        let result = await super.IsCustomerAuthOTP(cred)
+
+        if (result != null || result != undefined) {
+          return successResponse(
+            req,
+            res,
+            'OTP Sent successfully.',
+            result,
+          )
+        } else {
+          return errorResponse(req, res, 'Mobileno is incorrect.')
+        }
+      }
+    } catch (e) {
+      return errorResponse(req, res, 'Something went wrong.', e.message)
+    }
+  }
 }
 
 module.exports = AuthController

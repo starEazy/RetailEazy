@@ -206,4 +206,32 @@ module.exports = class OrderController extends OrderService {
       console.log(e);
     }
   }
+
+  static async SaveBilling(req, res){
+    try {
+      const { user_id } = req.user;
+      let IsError  = false;
+      let result = super.createBilling(Json, user_id,);
+      console.log(result,'...result');
+      if (IsError == true) {
+        return errorResponse(req, res, result);
+      }
+      else {
+        if (res != ""){
+          return successResponse(req, JSON.parse(res), result,"Success");
+          // return Ok(Response.Success("Success", JsonConvert.DeserializeObject<dynamic>(res)));
+        }
+        else{
+          return errorResponse("Something went wrong.");
+        }
+      }
+    } catch (ex) {
+      return errorResponse(
+        req,
+        res,
+        "UnExcepted in Invoice Billing Process.",
+        e.toString()
+      );
+    }
+  } 
 };

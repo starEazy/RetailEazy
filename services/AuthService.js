@@ -5,6 +5,7 @@ const postgreConnection = require('../apps/helpers/sequelizeHelper')
 const { buildToken, stringDecrypt } = require('../apps/JWT/encrypt-decrypt')
 const { Jwt } = require('../apps/JWT/jwt')
 const { response } = require('express')
+const { GetColumnValueUsingColValueFromDt } = require('./EmailServices')
 
 class AuthService {
   static async customerAuth(userCredential, dms_token) {
@@ -771,6 +772,96 @@ class AuthService {
       console.log(error)
       throw error
     }
+  }
+
+  static async IsCustomerAuthOTP(UserCredential){
+    writeLog(new Date().toString());
+    let response = "";
+    try {
+      let dt = [];
+      let dt1 = [];
+      let sQuery = "";
+      let AppName = "";
+
+      writeLog("Login Credential OTP " + JSON.stringify(UserCredential))
+      sQuery = `SELECT reg.registrationid,reg.username,reg.emailid,reg.mobileno,reg.loginuserpassword,reg.isactive,to_char(reg.alteredon,'yyyy-mm-dd HH24:mi:ss') as alteredon FROM tbl_registration reg WHERE reg.isactive = TRUE AND reg.mobileno = ${UserCredential.Username}`;
+      writeLog(`Login Query ${sQuery}`);
+
+      dt = await postgreConnection.query(sQuery);
+      writeLog(new Date().toString());
+      writeLog(`Dt Count  ${dt.length}`);
+
+      if(dt != "" && dt.length == 1){
+        let OTP_Settings = `SELECT * FROM tbl_globalsettings WHERE lower(itemkeyname) IN (lower('LogIn_OTP_Validity_Minute'),lower('LogIn_OTP_ReSend_Second'),lower('LogIn_OTP_Resend_Attempts')) `;
+        writeLog(`IsCustomerAuthOTP tbl_globalsettings Query ${OTP_Settings}`);
+        let senderResult = await postgreConnection.query(OTP_Settings);
+
+        let OTPButtonEnableTimeInSec = GetColumnValueUsingColValueFromDt(senderResult, "itemkeyname", "LogIn_OTP_ReSend_Second", "value", -1);
+        let OTPValidityInMin = GetColumnValueUsingColValueFromDt(senderResult, "itemkeyname", "LogIn_OTP_Validity_Minute", "value", -1);
+        let OTPResendAttempts = GetColumnValueUsingColValueFromDt(senderResult, "itemkeyname", "LogIn_OTP_Resend_Attempts", "value", -1);
+        let OTPCode = AuthService.GenerateOTP();
+
+        response = {
+          UserId: parseInt(dt[0]["registrationid"]),
+          Username: String(dt[0]["username"]),
+          OTPButtonEnableTimeInSec: parseInt(OTPButtonEnableTimeInSec),
+          OTPValidityInMin: parseInt(OTPValidityInMin),
+          AllowLogWithPasswordInResendOTPAttempts: parseInt(OTPResendAttempts),
+          OTPGenerateTime: "",
+          OTPPassword: OTPCode
+        };
+
+        sQuery = `Select count(1)  from tbl_mobilesessiondetail tm where isactivesession =true and userid = ${response.UserId} and imeinumber <> ${UserCredential.imei_no}`;
+        writeLog(`Get Total Login ${sQuery}`);
+        response.Activesessioncount = parserInt(await postgreConnection.query(sQuery));
+        
+        try {
+          AuthService.SaveLogInOTP(OTPCode, response.UserId, 3, AppName);
+        } catch (error) {
+          response = "";
+        }
+        // let IsException = false;
+        // let SmsResult = "";
+        // let config_type = "LoginOTP";
+        // SendSMS("TEXTLOCAL", OTPCode, UserCredential.Username, 0, AppName, config_type, out IsException, out SmsResult);
+        
+
+        if (IsException == true) {
+          sQuery = `UPDATE tbl_userotp SET remark =COALESCE(remark,'') || ' OTP send failure' WHERE otp_type=3 and isused=FALSE and isexpired=FALSE AND userid = ${response.UserId}`;
+          await postgreConnection.query(sQuery);
+        }
+        response.OTPGenerateTime = await postgreConnection.query(`Select to_char(createdon,'yyyy-mm-dd HH24:mi:ss') from tbl_userotp where otp_type = 3 and isused = false and isexpired = false and userid = ${response.UserId} order by id desc limit 1 `);
+      }else{
+        response = ""
+      }
+    } catch (error) {
+      throw error;
+    }
+    return response;
+  }
+
+  static async GenerateOTP(){
+    const otp = Math.floor(Math.random() * 10000); // Generate a random number between 0 and 9999
+    return otp.toString().padStart(4, '0'); // Convert to string and pad with zeros to ensure 4 digits
+  }
+
+  static async SaveLogInOTP(OTP, UserId,otp_type,appname){
+    let status = false;
+    let squery = "";
+    let GetBrandIDs = "";
+
+    squery = `SELECT Distinct STRING_AGG(bm.brandid::text,',') FROM tbl_brandmaster bm INNER JOIN tbl_userdesignationmapping udm on bm.brandid = udm.brandid INNER JOIN tbl_designationmaster dm on dm.designationid = udm.designationid where udm.userid = ${UserId}`;
+    writeLog(`SaveLogInOTP GetBrandLinkIds Query ${squery}`);
+    GetBrandIDs = await postgreConnection.query(squery);
+
+    squery = `UPDATE tbl_userotp SET isexpired = true WHERE otp_type=3 and isused=FALSE and isexpired=FALSE AND userid = ${UserId}`;
+    await postgreConnection.query(squery);
+
+    let queryUserVerified = `insert into tbl_userotp (userid, otp_code,otp_type,remark,brandids) VALUES( ${UserId} ,'${OTP}', ${otp_type},'${appname}','${GetBrandIDs}') returning id`;
+    writeLog(`SaveLogInOTP Insert OPT Query ${queryUserVerified}`);
+    status = await postgreConnection.query(queryUserVerified);
+
+    return status;
   }
 }
 

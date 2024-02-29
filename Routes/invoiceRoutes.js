@@ -5,7 +5,7 @@ const router = express.Router();
 const jwt_auth = require("../apps/JWT/jwt_auth");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
-const InvoiceController = require("../controllers/invoiceController");
+const InvoiceController = require("../controllers/InvoiceController");
 
 router.post(
   "/save",

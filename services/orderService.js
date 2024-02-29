@@ -74,117 +74,140 @@ module.exports = class OrderService {
   static async createBilling(JsonObject, UserId, IsError) {
     let response = "";
     let invoiceids = "";
-    const client = new Client();
+    writeLog("Start Billing API Json " + JsonObject);
+    let IsCount = 0;
+    let dtresponse = [];
 
     try {
-      await client.connect();
-      const tran = await client.query("BEGIN");
+      let squery = "";
+      let billingmasterid = 0;
+      let billingdetailid = 0;
 
       const requeststr = JSON.stringify(JsonObject);
       if (!requeststr) {
-        return null;
+        return response = null;
       }
-
       const requestParam = JSON.parse(requeststr);
 
-      const dtresponse = {
-        RowId: [],
-        billing_id: [],
-        billing_no: [],
-        brandid: [],
-      };
-
       for (const mstdetails of requestParam.MasterDetail) {
-        let squery = `
-                SELECT COUNT(1), MAX(billingmasterid) AS billingmasterid
-                FROM tbl_billingmaster
-                WHERE brandid = ${mstdetails.brandid}
-                AND sellerid = ${mstdetails.sellerid}
-                AND vch_no = '${mstdetails.vch_no}'
-                AND vch_date = '${mstdetails.vch_date}'
-                AND LOWER(tran_type) = 'sales'
-                AND createdtype = 2`;
-
-        const isCountStatus = await client.query(squery);
-        if (isCountStatus.rows.length > 0) {
-          if (isCountStatus.rows[0].count === 1) {
-            await client.query("ROLLBACK");
-            dtresponse.RowId.push(mstdetails.rowid);
-            dtresponse.billing_id.push(isCountStatus.rows[0].billingmasterid);
-            dtresponse.billing_no.push(mstdetails.vch_no);
-            dtresponse.brandid.push(mstdetails.brandid);
-            response = JSON.stringify(dtresponse);
+        squery = `SELECT COUNT(1), MAX(billingmasterid) AS billingmasterid FROM tbl_billingmaster WHERE brandid = ${mstdetails.brandid} AND sellerid = ${mstdetails.sellerid} AND vch_no = '${mstdetails.vch_no}' AND vch_date = '${mstdetails.vch_date}' AND LOWER(tran_type) = 'sales' AND createdtype = 2`;
+        const isCountStatus = await postgreConnection.query(squery);
+        if (isCountStatus.length > 0) {
+          if (parseInt(isCountStatus[0]["count"]) === 1) {
+            dtresponse.push({
+              RowId: mstdetails.rowid,
+              billing_id: isCountStatus.rows[0].billingmasterid,
+              billing_no: mstdetails.vch_no,
+              brandid: mstdetails.brandid,
+            })
             return response;
           } else if (isCountStatus.rows[0].count > 1) {
-            await client.query("ROLLBACK");
             IsError = true;
             return "Entry No already exists";
           }
         }
 
-        squery = `
-                INSERT INTO tbl_billingmaster(
-                    sellerid,
-                    customerid,
-                    brandid,
-                    vch_no,
-                    vch_date,
-                    tran_type,
-                    createdby,
-                    nettotal,
-                    orderid,
-                    remark,
-                    createdtype,
-                    devicetype,
-                    totaltax,
-                    customercode,
-                    dmsorderno,
-                    isdmsorder
-                )
-                VALUES (
-                    ${mstdetails.sellerid},
-                    ${parseInt(mstdetails.customerid)},
-                    ${mstdetails.brandid},
-                    '${mstdetails.vch_no}',
-                    '${new Date(mstdetails.vch_date)
-                      .toISOString()
-                      .slice(0, 10)}',
-                    'sales',
-                    ${UserId},
-                    ${mstdetails.nettotal},
-                    '${mstdetails.orderid}',
-                    '${mstdetails.remark}',
-                    2,
-                    ${isNull(mstdetails.Devicetype, "integer")},
-                    ${isNull(mstdetails.total_tax, "decimal")},
-                    '${mstdetails.customercode}',
-                    '${mstdetails.dmsorderno}',
-                    ${mstdetails.isdmsorder}
-                )
-                RETURNING billingmasterid`;
+        squery = `INSERT INTO tbl_billingmaster(sellerid,customerid,brandid,vch_no,vch_date,tran_type,createdby,nettotal,orderid,remark,createdtype,devicetype,totaltax,customercode,dmsorderno,isdmsorder) VALUES (${mstdetails.sellerid}, ${parseInt(mstdetails.customerid)}, ${mstdetails.brandid},'${mstdetails.vch_no}','${new Date(mstdetails.vch_date).toISOString().slice(0, 10)}','sales', ${UserId}, ${mstdetails.nettotal},'${mstdetails.orderid}','${mstdetails.remark}', 2,${isNull(mstdetails.Devicetype, "integer")},${isNull(mstdetails.total_tax, "decimal")}, '${mstdetails.customercode}', '${mstdetails.dmsorderno}', ${mstdetails.isdmsorder}) 
+          returning billingmasterid`;
+        writeLog("Billing Master Save Query " + squery);
 
-        const billingMasterResult = await client.query(squery);
-        const billingmasterid = billingMasterResult.rows[0].billingmasterid;
+        billingmasterid = parseInt(await postgreConnection.query(squery));
+        // const billingmasterid = billingMasterResult.rows[0].billingmasterid;
         invoiceids = `${billingmasterid},${invoiceids}`;
 
         for (const itemdetails of mstdetails.ItemDetail) {
-          // ... (similar logic for item details)
+          let BaseUnit = 0;
+          let AltUnit = 0;
+          let Conversion = 0;
+          let Denominator = 0;
+          let israteonaltunit = false;
+
+          squery = "select COALESCE(baseunitid,0) from tbl_itemmaster Where itemid=" + itemdetails.itemid + "";
+          BaseUnit = parseInt(await postgreConnection.query(squery));
+          writeLog(`BaseUnit ${BaseUnit}`);
+
+          if (parseInt(BaseUnit) == 0) {
+            writeLog("Item does not exist in our records.");
+            IsError = true;
+            return "Item does not exist in our records.";
+          }
+
+          squery = "select COALESCE(altunitid,0) from tbl_itemmaster Where itemid=" + itemdetails.itemid + "";
+          AltUnit = parseInt(await postgreConnection.query(squery));
+          writeLog(`AltUnit ${AltUnit}`);
+
+          squery = "select COALESCE(conversion,0) from tbl_itemmaster Where itemid=" + itemdetails.itemid + "";
+          Conversion = parseFloat(await postgreConnection.query(squery));
+          writeLog(`Conversion ${Conversion}`);
+
+          squery = "";
+          squery = "select COALESCE(denominator,0) from tbl_itemmaster Where itemid=" + itemdetails.itemid + "";
+          Denominator = parseFloat(await postgreConnection.query(squery));
+          writeLog(`Denominator ${Denominator}`);
+
+          let BaseQty = 0;
+          let AltQty = 0;
+          if (parseInt(itemdetails.unitid) === BaseUnit) {
+            BaseQty = parseFloat(itemdetails.base_qty);
+            AltQty = parseFloat(((Denominator / Conversion) * parseFloat(itemdetails.base_qty)).toFixed(5));
+          }
+          if (parseInt(itemdetails.unitid) === AltUnit) {
+            BaseQty = parseFloat((Denominator * Conversion * parseFloat(itemdetails.base_qty)).toFixed(5)); // this is wrong.
+            BaseQty = parseFloat(((parseFloat(itemdetails.base_qty) * Conversion) / Denominator).toFixed(5)); // Rectify while bunge checking 26-june 2023
+            AltQty = parseFloat(itemdetails.base_qty);
+            israteonaltunit = true;
+          }
+
+          squery = "INSERT INTO tbl_billingdetails(billingmasterid,itemid,divisionid,base_qty,alt_qty,rate,amount,unitid,israteonaltunit,grossamount,discountper,discountamount,gstassessablevalue,igstrate,cgstrate,sgstrate,igstamount,cgstamount,sgstamount,isdiscountaftertax,isinclusive,itemmrp,dmsitemcode,dmssodetailid) VALUES (" + billingmasterid + "," + itemdetails.itemid + "," + Configure.IsNull(itemdetails.divisionid, VarType.Integer) + "," + BaseQty + "," + AltQty + "," + itemdetails.rate + "," + itemdetails.amount + "," + itemdetails.unitid + "," + israteonaltunit + " ," + Convert.ToDecimal(itemdetails.grossamount) + "," + Convert.ToDecimal(itemdetails.discountper) + "," + Convert.ToDecimal(itemdetails.discountamount) + "," + Convert.ToDecimal(itemdetails.gstassessablevalue) + "," + Convert.ToDecimal(itemdetails.igstrate) + "," + Convert.ToDecimal(itemdetails.cgstrate) + "," + Convert.ToDecimal(itemdetails.sgstrate) + "," + Convert.ToDecimal(itemdetails.igstamount) + "," + Convert.ToDecimal(itemdetails.cgstamount) + "," + Convert.ToDecimal(itemdetails.sgstamount) + "," + IsNull(itemdetails.isdiscountaftertax, VarType.Bool) + "," + IsNull(itemdetails.isinclusive, VarType.Bool) + "," + IsNull(Convert.ToDecimal(itemdetails.item_mrp), VarType.Dec) + ",'" + Configure.IsNull(itemdetails.item_code, VarType.Text) + "'," + IsNull(itemdetails.dmssodetailid, VarType.Integer32) + ")  returning billingdetailid";
+          writeLog("Billing Item Details Save Query " + squery);
+
+          billingdetailid = parseInt(await postgreConnection.query(squery));
+
+          for (const serialitem of itemdetails.serial_detail) {
+            squery = "INSERT INTO tbl_billingitemserial(billingmasterid,billingdetailid,serial_id,batchcode,scancode,scantype) VALUES (" + billingmasterid + "," + billingdetailid + ",'" + serialitem.serial_id + "','" + serialitem.batchcode + "','" + serialitem.scancode + "','" + serialitem.scantype + "')  returning serialid";
+            writeLog("Billing Item Details Save Query " + squery);
+
+            let serialid = parseInt(await postgreConnection.query(squery));
+          }
+          if (itemdetails.ScanDetail != null) {
+            for(const scan of itemdetails.ScanDetail) {
+              squery = "INSERT INTO tbl_billingitemserial(billingmasterid,billingdetailid,serial_id,batchcode,scancode,scantype,iscarton) VALUES (" + billingmasterid + "," + billingdetailid + ",'" + scan.serial_id + "','" + scan.batchcode + "','" + scan.scancode + "','" + scan.scantype + "'," + Convert.ToBoolean(scan.iscarton) + ")  returning serialid";
+              Configure.WriteLog("Purchase Invoice Scan Details Save Query " + squery);
+              let serialid = parseInt(await postgreConnection.query(squery));
+            }
+          }
         }
-
-        dtresponse.RowId.push(mstdetails.rowid);
-        dtresponse.billing_id.push(billingmasterid);
-        dtresponse.billing_no.push(mstdetails.vch_no);
-        dtresponse.brandid.push(mstdetails.brandid);
+        if(billingmasterid > 0){
+          squery = " update tbl_suborderdetail set pendingqty = (qty - z.base_qty) ";
+          squery = squery + " from(select z.orderid, z1.itemid, sum(base_qty) base_qty from tbl_billingmaster z ";
+          squery = squery + " inner join tbl_billingdetails z1 on z.billingmasterid = z1.billingmasterid ";
+          squery = squery + " where COALESCE(z.orderid, 0) <> 0  and z.billingmasterid = " + billingmasterid + " ";
+          squery = squery + " Group by z.orderid, z1.itemid) z ";
+          squery = squery + " Where tbl_suborderdetail.orderid = z.orderid ";
+          squery = squery + " and tbl_suborderdetail.itemid = z.itemid ";
+          squery = " UPDATE tbl_suborderdetail SET pendingqty = (qty - z.base_qty) " +
+              " FROM (SELECT z.orderid, z1.itemid, sum(base_qty) base_qty from tbl_billingmaster z " +
+              " INNER JOIN tbl_billingdetails z1 ON z.billingmasterid = z1.billingmasterid " +
+              " INNER JOIN (Select orderid from tbl_billingmaster where billingmasterid = " + billingmasterid + " ) ord ON z.orderid =ord.orderid " +
+              " WHERE COALESCE(z.orderid, 0) <> 0 AND z.orderid = ord.orderid  " +
+              " GROUP BY z.orderid, z1.itemid) z " +
+              " WHERE tbl_suborderdetail.orderid = z.orderid " +
+              " AND tbl_suborderdetail.itemid = z.itemid ";
+          await postgreConnection.query(squery);
+        }
+        dtresponse.push({
+          RowId: mstdetails.rowid,
+          billing_id: parseInt(billingmasterid),
+          billing_no: mstdetails.vch_no,
+          brandid: mstdetails.brandid,
+        })
       }
-
-      await client.query("COMMIT");
       response = JSON.stringify(dtresponse);
-      return response;
     } catch (error) {
-      await client.query("ROLLBACK");
       IsError = true;
       response = null;
     }
+    return response;
   }
 
   static async PostOrder(JsonObject,UserId){
@@ -363,7 +386,6 @@ module.exports = class OrderService {
 
     return result;
   } 
-
 
   static async PlaceOrderCancel(JsonObject, UserId){
     writeLog("Start Place Order Cancel API ");
